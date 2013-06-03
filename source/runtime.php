@@ -199,6 +199,10 @@ namespace Components;
 
     public function onExit()
     {
+      // FIXME (CSH) Get rid of permanent exceptions in magento and re-enable ...
+      if('cli'!==PHP_SAPI)
+        return;
+
       $error=error_get_last();
 
       if(null!==$error)
@@ -209,7 +213,7 @@ namespace Components;
       }
 
       // TODO (CSH) What if is_file or Cache::dump throws an exception here?
-      if('cli'===PHP_SAPI && false===is_file(self::$m_cacheFile))
+      if(false===is_file(self::$m_cacheFile))
         Cache::dump(self::$m_cacheFile);
     }
     //--------------------------------------------------------------------------
