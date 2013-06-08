@@ -254,6 +254,21 @@ namespace Components;
      *
      * @return string
      */
+    public static function uriComponentsEmbedded($path_=null)
+    {
+      if(null===$path_)
+        return self::$m_current->m_uriComponents.'/embedded';
+
+      $path_=ltrim($path_, '/');
+
+      return self::$m_current->m_uriComponents."/embedded/$path_";
+    }
+
+    /**
+     * @param string $path_
+     *
+     * @return string
+     */
     public static function uriResource($path_=null)
     {
       if(null===$path_)
@@ -281,6 +296,22 @@ namespace Components;
     public static function isCli()
     {
       return 'cli'===PHP_SAPI;
+    }
+
+    /**
+     * @param boolean $embedded_
+     *
+     * @return boolean
+     */
+    public static function isEmbedded($embedded_=null)
+    {
+      if(null===$embedded_)
+        return self::$m_embedded;
+
+      if(true===$embedded_)
+        return self::$m_embedded=true;
+
+      return self::$m_embedded=false;
     }
     //--------------------------------------------------------------------------
 
@@ -477,11 +508,15 @@ namespace Components;
       self::GAMMA=>'gamma',
       self::LIVE=>'live'
     );
-
     /**
      * @var array|Components\Environment
      */
     private static $m_stack=array();
+    /**
+     * @var boolean
+     */
+    private static $m_embedded=false;
+
     /**
      * @var Components\Environment
      */

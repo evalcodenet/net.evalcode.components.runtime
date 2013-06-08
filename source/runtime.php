@@ -199,8 +199,7 @@ namespace Components;
 
     public function onExit()
     {
-      // FIXME (CSH) Get rid of permanent exceptions in magento and re-enable ...
-      if('cli'!==PHP_SAPI)
+      if(Environment::isEmbedded())
         return;
 
       $error=error_get_last();
