@@ -11,14 +11,11 @@ namespace Components;
    * @subpackage type
    *
    * @author evalcode.net
+   *
+   * @method integer count
    */
   interface Countable extends \Countable
   {
-    // ACCESSORS
-    /**
-     * @return integer
-     */
-    function count();
-    //--------------------------------------------------------------------------
+
   }
 ?>

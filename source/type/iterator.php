@@ -11,22 +11,20 @@ namespace Components;
    * @subpackage type
    *
    * @author evalcode.net
+   *
+   * @method mixed current
+   * @method mixed key
+   * @method mixed next
+   * @method mixed rewind
+   * @method boolean valid
    */
   interface Iterator extends \Iterator
   {
     // ACCESSORS
-    function current();
-    function key();
-
     function hasNext();
     function hasPrevious();
 
-    function next();
     function previous();
-
-    function rewind();
-
-    function valid();
     //--------------------------------------------------------------------------
   }
 ?>

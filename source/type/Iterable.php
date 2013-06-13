@@ -11,14 +11,11 @@ namespace Components;
    * @subpackage type
    *
    * @author evalcode.net
+   *
+   * @method \Components\Iterator getIterator
    */
   interface Iterable extends \IteratorAggregate
   {
-    // ACCESSORS
-    /**
-     * @return \Components\Iterator
-     */
-    function getIterator();
-    //--------------------------------------------------------------------------
+
   }
 ?>
