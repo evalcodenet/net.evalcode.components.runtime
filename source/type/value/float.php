@@ -11,25 +11,11 @@ namespace Components;
    * @subpackage type.value
    *
    * @author evalcode.net
+   *
+   * @method float value
    */
   interface Value_Float extends Value
   {
-    // ACCESSORS
-    /**
-     * (non-PHPdoc)
-     * @see Components\Value::value()
-     *
-     * @return float
-     */
-    function value();
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Value::valueOf()
-     *
-     * @param float $value_
-     */
-    static function valueOf($value_);
-    //--------------------------------------------------------------------------
   }
 ?>

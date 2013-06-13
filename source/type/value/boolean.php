@@ -11,25 +11,11 @@ namespace Components;
    * @subpackage type.value
    *
    * @author evalcode.net
+   *
+   * @method boolean value
    */
   interface Value_Boolean extends Value
   {
-    // ACCESSORS
-    /**
-     * (non-PHPdoc)
-     * @see Components\Value::value()
-     *
-     * @return boolean
-     */
-    function value();
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Value::valueOf()
-     *
-     * @param boolean $value_
-     */
-    static function valueOf($value_);
-    //--------------------------------------------------------------------------
   }
 ?>
