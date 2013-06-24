@@ -31,11 +31,15 @@ namespace Components;
       $this->m_name=self::$m_names[$type_];
 
       $this->m_pathComponents=dirname(dirname(__DIR__));
+
       $this->m_pathApplication=$this->m_pathComponents.'/app';
       $this->m_pathConfig=$this->m_pathComponents.'/app/config';
       $this->m_pathResource=$this->m_pathComponents.'/app/resource';
-      $this->m_uriComponents='/components/';
-      $this->m_uriResource='/resource/';
+
+      $this->m_uriComponents='/components';
+      $this->m_uriComponentsEmbedded=$this->m_uriComponents.'/embedded';
+
+      $this->m_uriResource='/resource';
     }
     //--------------------------------------------------------------------------
 
@@ -239,14 +243,12 @@ namespace Components;
      *
      * @return string
      */
-    public static function uriComponents($path_=null)
+    public static function uriComponents($path0_=null/*, $path1_...*/)
     {
-      if(null===$path_)
+      if(0===func_num_args())
         return self::$m_current->m_uriComponents;
 
-      $path_=ltrim($path_, '/');
-
-      return self::$m_current->m_uriComponents."/$path_";
+      return self::$m_current->m_uriComponents.'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -254,14 +256,12 @@ namespace Components;
      *
      * @return string
      */
-    public static function uriComponentsEmbedded($path_=null)
+    public static function uriComponentsEmbedded($path0_=null/*, $path1_...*/)
     {
-      if(null===$path_)
-        return self::$m_current->m_uriComponents.'/embedded';
+      if(0===func_num_args())
+        return self::$m_current->m_uriComponentsEmbedded;
 
-      $path_=ltrim($path_, '/');
-
-      return self::$m_current->m_uriComponents."/embedded/$path_";
+      return self::$m_current->m_uriComponentsEmbedded.'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -269,14 +269,12 @@ namespace Components;
      *
      * @return string
      */
-    public static function uriResource($path_=null)
+    public static function uriResource($path0_=null/*, $path1_...*/)
     {
-      if(null===$path_)
+      if(0===func_num_args())
         return self::$m_current->m_uriResource;
 
-      $path_=ltrim($path_, '/');
-
-      return self::$m_current->m_uriResource."/$path_";
+      return self::$m_current->m_uriResource.'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -436,6 +434,26 @@ namespace Components;
     /**
      * @return string
      */
+    public function getUriComponentsEmbedded()
+    {
+      return $this->m_uriComponentsEmbedded;
+    }
+
+    /**
+     * @param string $path_
+     *
+     * @return \Components\Environment
+     */
+    public function setUriComponentsEmbedded($uri_)
+    {
+      $this->m_uriComponentsEmbedded=$uri_;
+
+      return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getUriResource()
     {
       return $this->m_uriResource;
@@ -550,6 +568,10 @@ namespace Components;
      * @var string
      */
     private $m_uriComponents;
+    /**
+     * @var string
+     */
+    private $m_uriComponentsEmbedded;
     /**
      * @var string
      */
