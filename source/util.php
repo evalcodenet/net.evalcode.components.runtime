@@ -47,8 +47,20 @@
     foreach($args as $arg)
     {
       // FIXME (CSH) Stay inside 32bit ...
-      $hash=31*$hash+(int)$arg;
+      $hash=31*$hash+$arg;
     }
+
+    return $hash;
+  }
+
+  function float_hash($float0_/*, $float1_, $float2_, ..*/)
+  {
+    if(false===is_array($args=func_get_arg(0)))
+      $args=func_get_args();
+
+    $hash=0;
+    foreach($args as $arg)
+      $hash=31*$hash+$arg;
 
     return $hash;
   }

@@ -20,6 +20,9 @@ namespace Components;
     {
       $type=get_class($this);
 
+      if(false===isset(self::$m_enums[$type]))
+        $type=get_parent_class($type);
+
       $this->m_name=constant("$type::$name_");
       $this->m_key=self::$m_enums[$type][$name_];
     }
@@ -79,6 +82,9 @@ namespace Components;
         ));
       }
 
+      if(@class_exists($impl="{$type}_".String::toTypeName($name_)))
+        $type=$impl;
+
       if(0<count($args_))
       {
         array_unshift($args_, $name_);
@@ -88,6 +94,7 @@ namespace Components;
       }
 
       // Cache simple enum instances.
+      // FIXME Could still have sideeffects if the instances allow state manipulation...
       return self::$m_enumInstances[$type][$name_]=new $type($name_);
     }
 
@@ -247,7 +254,7 @@ namespace Components;
      */
     private static $m_enums=array();
     /**
-     * @var array|Components\Enumeration
+     * @var array|\Components\Enumeration
      */
     private static $m_enumInstances=array();
 
