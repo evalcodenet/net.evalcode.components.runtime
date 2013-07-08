@@ -55,10 +55,7 @@ namespace Components;
       if(false===isset(self::$m_enums[$type]))
       {
         if(false===self::$m_initialized)
-        {
-          if(false===(self::$m_enums=Cache::get('components/runtime/type/enumeration')))
-            self::$m_enums=array();
-        }
+          self::initialize();
 
         if(false===array_key_exists($type, self::$m_enums))
         {
@@ -82,8 +79,8 @@ namespace Components;
         ));
       }
 
-      if(@class_exists($impl="{$type}_".String::toTypeName($name_)))
-        $type=$impl;
+      if($concrete=Runtime_Classloader::lookup(String::typeToNamespace($type).'/'.String::typeToPath($name_)))
+        $type=$concrete;
 
       if(0<count($args_))
       {
@@ -105,6 +102,9 @@ namespace Components;
      */
     public static function contains($name_)
     {
+      if(false===self::$m_initialized)
+        self::initialize();
+
       return array_key_exists($name_, self::$m_enums[get_called_class()]);
     }
 
@@ -115,6 +115,9 @@ namespace Components;
      */
     public static function containsKey($name_)
     {
+      if(false===self::$m_initialized)
+        self::initialize();
+
       return array_key_exists($name_, self::$m_enums[get_called_class()]);
     }
 
@@ -260,6 +263,17 @@ namespace Components;
 
     protected $m_name;
     protected $m_key;
+    //----
+
+
+    // HELPERS
+    private static function initialize()
+    {
+      if(false===(self::$m_enums=Cache::get('components/runtime/type/enumeration')))
+        self::$m_enums=array();
+
+      self::$m_initialized=true;
+    }
     //--------------------------------------------------------------------------
   }
 ?>
