@@ -16,15 +16,10 @@ namespace Components;
   abstract class Enumeration implements Object, Comparable, Value_String, Serializable_Php
   {
     // CONSTRUCTION
-    public function __construct($name_)
+    public function __construct($key_, $name_)
     {
-      $type=get_class($this);
-
-      if(false===isset(self::$m_enums[$type]))
-        $type=get_parent_class($type);
-
-      $this->m_name=constant("$type::$name_");
-      $this->m_key=self::$m_enums[$type][$name_];
+      $this->m_name=$name_;
+      $this->m_key=$key_;
     }
     //--------------------------------------------------------------------------
 
@@ -53,24 +48,14 @@ namespace Components;
         return self::$m_enumInstances[$type][$name_];
 
       if(false===isset(self::$m_enums[$type]))
-      {
-        if(false===self::$m_initialized)
-          self::initialize();
-
-        if(false===array_key_exists($type, self::$m_enums))
-        {
-          self::$m_enums[$type]=array_flip(static::values());
-
-          Cache::set('components/runtime/type/enumeration', self::$m_enums);
-        }
-      }
+        self::initializeType($type);
 
       if(false===array_key_exists($name_, self::$m_enums[$type]))
       {
         $trace=debug_backtrace(false);
         $caller=$trace[1];
 
-        throw new Runtime_Exception('runtime/type/enumeration', sprintf(
+        throw new Runtime_Exception('components/type/enumeration', sprintf(
           'Call to undefined method %1$s::%2$s() in %3$s on line %4$d.',
             $type,
             $name_,
@@ -79,46 +64,25 @@ namespace Components;
         ));
       }
 
-      if($concrete=Runtime_Classloader::lookup(String::typeToNamespace($type).'/'.String::typeToPath($name_)))
-        $type=$concrete;
+      if(!$concrete=Runtime_Classloader::lookup(String::typeToNamespace($type).'/'.String::typeToPath($name_)))
+        $concrete=$type;
 
       if(0<count($args_))
       {
-        array_unshift($args_, $name_);
-        $class=new \ReflectionClass($type);
+        array_unshift($args_, constant("$type::$name_"));
+        array_unshift($args_, self::$m_enums[$type][$name_]);
+
+        $class=new \ReflectionClass($concrete);
 
         return $class->newInstanceArgs($args_);
       }
 
       // Cache simple enum instances.
-      // FIXME Could still have sideeffects if the instances allow state manipulation...
-      return self::$m_enumInstances[$type][$name_]=new $type($name_);
-    }
-
-    /**
-     * @param string $name_
-     *
-     * @return boolean
-     */
-    public static function contains($name_)
-    {
-      if(false===self::$m_initialized)
-        self::initialize();
-
-      return array_key_exists($name_, self::$m_enums[get_called_class()]);
-    }
-
-    /**
-     * @param string $name_
-     *
-     * @return boolean
-     */
-    public static function containsKey($name_)
-    {
-      if(false===self::$m_initialized)
-        self::initialize();
-
-      return array_key_exists($name_, self::$m_enums[get_called_class()]);
+      // XXX Instances MUST be state-less.
+      return self::$m_enumInstances[$type][$name_]=new $concrete(
+        self::$m_enums[$type][$name_],
+        constant("$type::$name_")
+      );
     }
 
     /**
@@ -136,7 +100,133 @@ namespace Components;
      */
     public static function values()
     {
-      throw new Exception_Abstract_Method('components/runtime/type/enumeration', 'Abstract method.');
+      throw new Exception_Abstract_Method('components/type/enumeration', 'Abstract method.');
+    }
+
+    /**
+     * @param mixed $key_
+     *
+     * @return \Components\Enumeration
+     */
+    public static function forKey($key_)
+    {
+      $type=get_called_class();
+
+      if(__CLASS__===$type)
+      {
+        throw new Runtime_Exception('components/type/enumeration',
+          'Enumeration can not be invoked directly.'
+        );
+      }
+
+      if(false===isset(self::$m_enums[$type]))
+        self::initializeType($type);
+
+      $names=array_flip(self::$m_enums[$type]);
+      if(false===isset($names[$key_]))
+        return null;
+
+      return static::valueOf($names[$key_]);
+    }
+
+    /**
+     * @param string $name_
+     *
+     * @return mixed
+     *
+     * @throws \Components\Runtime_Exception
+     */
+    public static function keyForName($name_)
+    {
+      $type=get_called_class();
+
+      if(__CLASS__===$type)
+      {
+        throw new Runtime_Exception('components/type/enumeration',
+          'Enumeration can not be invoked directly.'
+        );
+      }
+
+      if(false===isset(self::$m_enums[$type]))
+        self::initializeType($type);
+
+      if(false===array_key_exists($name_, self::$m_enums[$type]))
+        return null;
+
+      return self::$m_enums[$type][$name_];
+    }
+
+    /**
+     * @param mixed $key_
+     *
+     * @return string
+     *
+     * @throws \Components\Runtime_Exception
+     */
+    public static function nameForKey($key_)
+    {
+      $type=get_called_class();
+
+      if(__CLASS__===$type)
+      {
+        throw new Runtime_Exception('components/type/enumeration',
+          'Enumeration can not be invoked directly.'
+        );
+      }
+
+      if(false===isset(self::$m_enums[$type]))
+        self::initializeType($type);
+
+      $names=array_flip(self::$m_enums[$type]);
+
+      if(false===isset($names[$key_]))
+        return null;
+
+      return $names[$key_];
+    }
+
+    /**
+     * @param string $name_
+     *
+     * @return boolean
+     */
+    public static function contains($name_)
+    {
+      $type=get_called_class();
+
+      if(__CLASS__===$type)
+      {
+        throw new Runtime_Exception('components/type/enumeration',
+          'Enumeration can not be invoked directly.'
+        );
+      }
+
+      if(false===isset(self::$m_enums[$type]))
+        self::initializeType($type);
+
+      return array_key_exists($name_, self::$m_enums[$type]);
+    }
+
+    /**
+     * @param string $key_
+     *
+     * @return boolean
+     */
+    public static function containsKey($key_)
+    {
+      $type=get_called_class();
+
+      if(__CLASS__===$type)
+      {
+        throw new Runtime_Exception('components/type/enumeration',
+          'Enumeration can not be invoked directly.'
+        );
+      }
+
+      if(false===isset(self::$m_enums[$type]))
+        self::initializeType($type);
+
+      return in_array($key_, self::$m_enums[$type]);
     }
     //--------------------------------------------------------------------------
 
@@ -214,7 +304,7 @@ namespace Components;
      */
     public function __sleep()
     {
-      return array('m_name');
+      return array('m_key', 'm_name');
     }
 
     /**
@@ -223,8 +313,7 @@ namespace Components;
      */
     public function __wakeup()
     {
-      $type=get_class($this);
-      $this->m_key=self::$m_enums[$type][$this->m_name];
+
     }
 
     /**
@@ -267,12 +356,22 @@ namespace Components;
 
 
     // HELPERS
-    private static function initialize()
+    private static function initializeType($type_)
     {
-      if(false===(self::$m_enums=Cache::get('components/runtime/type/enumeration')))
-        self::$m_enums=array();
+      if(false===self::$m_initialized)
+      {
+        if(false===(self::$m_enums=Cache::get('components/type/enumeration')))
+          self::$m_enums=array();
 
-      self::$m_initialized=true;
+        self::$m_initialized=true;
+      }
+
+      if(false===array_key_exists($type_, self::$m_enums))
+      {
+        self::$m_enums[$type_]=array_flip(static::values());
+
+        Cache::set('components/type/enumeration', self::$m_enums);
+      }
     }
     //--------------------------------------------------------------------------
   }
