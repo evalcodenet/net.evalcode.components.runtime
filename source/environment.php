@@ -12,7 +12,7 @@ namespace Components;
    *
    * @author evalcode.net
    */
-  class Environment implements Object, Cloneable
+  class Environment implements Object, Cloneable, Value_String
   {
     // PREDEFINED PROPERTIES
     const LIVE=1;
@@ -74,6 +74,23 @@ namespace Components;
       self::$m_current=end(self::$m_stack);
 
       return $environment;
+    }
+
+    /**
+     * @param string $name_
+     *
+     * @return \Components\Environment
+     *
+     * @throws \ComponentsRuntime_Exception
+     */
+    public static function valueOf($name_)
+    {
+      $types=array_flip(self::$m_names);
+
+      if(false===isset($types[$name_]))
+        throw new Runtime_Exception('components/environment', sprintf('Passed environment name is not valid [%s].', $name_));
+
+      return new static($types[$name_]);
     }
 
     /**
@@ -473,7 +490,16 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Value_String::value()
+     */
+    public function value()
+    {
+      return $this->m_name;
+    }
+
     /**
      * (non-PHPdoc)
      * @see Components\Cloneable::__clone()
