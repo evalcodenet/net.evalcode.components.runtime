@@ -156,7 +156,7 @@ namespace Components;
             PHP_EOL
         );
       }
-      else if(!Environment::isLive())
+      else if(Environment::isDev())
       {
         if(false===headers_sent())
           header('HTTP/1.1 500 Internal Server Error', true, 500);
@@ -199,9 +199,6 @@ namespace Components;
 
     public function onExit()
     {
-      if(Environment::isEmbedded())
-        return;
-
       $error=error_get_last();
 
       if(null!==$error)
