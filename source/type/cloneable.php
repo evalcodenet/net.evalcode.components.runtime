@@ -16,7 +16,7 @@ namespace Components;
   {
     // ACCESSORS
     /**
-     * Returns indentical duplicate of this object.
+     * Returns instance of identical type & state to the invoked one.
      *
      * @return mixed
      */
