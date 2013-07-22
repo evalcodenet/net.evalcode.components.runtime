@@ -14,7 +14,15 @@ namespace Components;
    */
   class Log_Appender_Null extends Log_Appender_Abstract
   {
-    // OVERRIDES
+    // CONSTRUCTION
+    public function __construct($name_='null', $level_=Log::FATAL)
+    {
+      parent::__construct($name_, $level_);
+    }
+    //--------------------------------------------------------------------------
+
+
+    // OVERRIDES/IMPLEMENTS
     /**
      * (non-PHPdoc)
      * @see Components\Log_Appender::append()

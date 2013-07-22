@@ -16,43 +16,47 @@ namespace Components;
   {
     // PREDEFINED PROPERTIES
     const DEFAULT_LEVEL=Log::INFO;
-    const DEFAULT_PATTERN="[%d.%u%z] [%l] [%n] %m\n";
+    const DEFAULT_PATTERN="[%d.%u%z] [%h] [%l] [%n] %m\n";
     const DEFAULT_PATTERN_DATE='Y.m.d\TH:i:s';
     //--------------------------------------------------------------------------
 
 
+    // PROPERTIES
+    /**
+     * @var string
+     */
+    public $name;
+    /**
+     * @var string
+     */
+    public $host;
+    /**
+     * @var integer
+     */
+    public $level=self::DEFAULT_LEVEL;
+    /**
+     * @var string
+     */
+    public $pattern=self::DEFAULT_PATTERN;
+    /**
+     * @var string
+     */
+    public $patternDate=self::DEFAULT_PATTERN_DATE;
+    //--------------------------------------------------------------------------
+
+
     // CONSTRUCTION
-    public function __construct($name_, $level_=self::DEFAULT_LEVEL,
-      $pattern_=self::DEFAULT_PATTERN, $patternDate_=self::DEFAULT_PATTERN_DATE)
+    public function __construct($name_, $level_=self::DEFAULT_LEVEL)
     {
-      $this->m_name=$name_;
-      $this->m_level=$level_;
-      $this->m_pattern=$pattern_;
-      $this->m_patternDate=$patternDate_;
+      $this->name=$name_;
+      $this->level=$level_;
+
       $this->m_timezone=date('P');
     }
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::name()
-     */
-    public function name()
-    {
-      return $this->m_name;
-    }
-
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::level()
-     */
-    public function level()
-    {
-      return $this->m_level;
-    }
-
+    // OVERRIDES/IMPLEMENTS
     /**
      * (non-PHPdoc)
      * @see Components\Log_Appender::debug()
@@ -113,7 +117,10 @@ namespace Components;
      */
     public function equals($object_)
     {
-      return $this===$object_;
+      if($object_ instanceof self)
+        return $this->m_name===$object_->m_name;
+
+      return false;
     }
 
     /**
@@ -122,7 +129,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return string_hash($this->m_name);
+      return string_hash($this->name);
     }
 
     /**
@@ -134,9 +141,9 @@ namespace Components;
       return sprintf('%s@%s{name: %s, level: %s, pattern: %s}',
         get_class($this),
         $this->hashCode(),
-        $this->m_name,
-        $this->m_level,
-        $this->m_pattern
+        $this->name,
+        $this->level,
+        $this->pattern
       );
     }
     //--------------------------------------------------------------------------
@@ -165,11 +172,6 @@ namespace Components;
       Log::FATAL=>'FATAL'
     );
 
-    protected $m_name;
-    protected $m_level;
-    protected $m_pattern;
-    protected $m_patternDate;
-
     private $m_timezone;
     //-----
 
@@ -186,20 +188,21 @@ namespace Components;
     {
       $time=microtime(true);
       $time=array(substr($time, 0, COMPONENTS_TIMESTAMP_SIZE),
-        str_pad(substr($time, COMPONENTS_TIMESTAMP_SIZE+1, 4), 4, 0, STR_PAD_LEFT)
+        str_pad(substr($time, COMPONENTS_TIMESTAMP_SIZE+1, 3), 3, 0, STR_PAD_LEFT)
       );
 
       return str_replace(
-        array('%d', '%u', '%z', '%l', '%n', '%m'),
+        array('%d', '%u', '%z', '%h', '%l', '%n', '%m'),
         array(
-          date($this->m_patternDate, $time[0]),
+          date($this->patternDate, $time[0]),
           $time[1],
           $this->m_timezone,
+          $this->host,
           self::$m_mapLevelToOutput[$level_],
           array_shift($args_),
           vsprintf(array_shift($args_), $args_)
         ),
-        $this->m_pattern
+        $this->pattern
       );
     }
     //--------------------------------------------------------------------------

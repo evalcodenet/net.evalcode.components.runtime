@@ -137,7 +137,10 @@ namespace Components;
       if($e_ instanceof Runtime_Exception || $e_ instanceof Runtime_ErrorException)
         $e_->log();
       else
-        Log::error(Ns::of($e_), $e_->getMessage());
+        Log::error(Ns::of($e_), '%s', $e_);
+
+      if(in_array($e_->getCode(), array(E_WARNING, E_NOTICE)))
+        return;
 
       // TODO Collect/queue for further developer notifications...
       if(Environment::isCli())
@@ -607,12 +610,10 @@ namespace Components;
     {
       if($this->m_logEnabled)
       {
-        Log::error($this->m_namespace, $this->message);
+        Log::error($this->m_namespace, '%s', $this);
 
-        if(($cause=$this->getPrevious()) instanceof Runtime_Exception)
-          $cause->log();
-        else if($cause instanceof \Exception)
-          Log::error($this->m_namespace, $cause->getMessage());
+        if($cause=$this->getPrevious())
+          Log::error($this->m_namespace, '%s', $cause);
       }
     }
     //--------------------------------------------------------------------------
@@ -646,11 +647,9 @@ namespace Components;
      */
     public function __toString()
     {
-      return sprintf('%s@%s{namespace: %s, message: %s}',
-        __CLASS__,
-        $this->hashCode(),
-        $this->m_namespace,
-        $this->message
+      return sprintf("%s\n\n%s\n",
+        $this->message,
+        $this->getTraceAsString()
       );
     }
     //--------------------------------------------------------------------------
@@ -695,12 +694,10 @@ namespace Components;
     {
       if($this->m_logEnabled)
       {
-        Log::error($this->m_namespace, $this->message);
+        Log::error($this->m_namespace, '%s', $this);
 
-        if(($cause=$this->getPrevious()) instanceof Runtime_ErrorException)
-          Log::error($cause->m_namespace, $cause->message);
-        else if($cause instanceof \ErrorException)
-          Log::error($this->m_namespace, $cause->getMessage());
+        if($cause=$this->getPrevious())
+          Log::error($cause->m_namespace, '%s', $cause);
       }
     }
     //--------------------------------------------------------------------------
@@ -734,11 +731,9 @@ namespace Components;
      */
     public function __toString()
     {
-      return sprintf('%s@%s{namespace: %s, message: %s}',
-        __CLASS__,
-        $this->hashCode(),
-        $this->m_namespace,
-        $this->message
+      return sprintf("%s\n\n%s\n",
+        $this->message,
+        $this->getTraceAsString()
       );
     }
     //--------------------------------------------------------------------------
@@ -774,5 +769,5 @@ namespace Components;
 
   Cache::create();
   spl_autoload_register(array(new Runtime_Classloader(), 'loadClass'));
-  Log::push(new Log_Appender_Null('null'));
+  Log::push(new Log_Appender_Null('null', Log::FATAL));
 ?>

@@ -14,13 +14,17 @@ namespace Components;
    */
   class Log_Appender_Log4cxx_Syslog extends Log_Appender_Log4cxx
   {
-    // OVERRIDES
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * (non-PHPdoc)
+     * @see \Components\Object::__toString()
+     */
     public function __toString()
     {
-      return sprintf('%1$s#%2$s{initialized: %3$s}',
+      return sprintf('%s@%s{initialized: %s}',
         __CLASS__,
         $this->hashCode(),
-        $this->m_initialized?'true':'false'
+        Boolean::valueOf($this->m_initialized)
       );
     }
     //--------------------------------------------------------------------------

@@ -22,12 +22,12 @@ namespace Components;
     // STATIC ACCESSORS
     public static function isSupported()
     {
-      return @class_exists('\LoggerManager');
+      return @class_exists('\\LoggerManager');
     }
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
+    // OVERRIDES/IMPLEMENTS
     /**
      * (non-PHPdoc)
      * @see Components\Log_Appender::append()
@@ -54,7 +54,7 @@ namespace Components;
         str_replace(' ', '', lcfirst(ucwords(strtr(trim(get_class($this)), '_', ' '))))
       );
 
-      $this->m_level=self::$m_mapNameToLevel[strtolower($this->m_logger->getEffectiveLevel())];
+      $this->level=self::$m_mapNameToLevel[strtolower($this->m_logger->getEffectiveLevel())];
 
       $this->m_initialized=true;
     }
@@ -67,7 +67,7 @@ namespace Components;
      */
     protected $m_initialized=false;
     /**
-     * @var Logger $logger
+     * @var \Logger $logger
      */
     protected $m_logger;
     //-----

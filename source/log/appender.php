@@ -11,15 +11,16 @@ namespace Components;
    * @subpackage log
    *
    * @author evalcode.net
+   *
+   * @property string name
+   * @property string host
+   * @property string level
+   * @property string pattern
+   * @property string patternDate
    */
   interface Log_Appender extends Object
   {
-    // ACCESSORS
-    /**
-     * @return string
-     */
-    function name();
-
+    // ACCESSORS/MUTATORS
     /**
      * @param string $namespace_
      * @param string $message_
@@ -62,11 +63,6 @@ namespace Components;
      * @internal
      */
     function append($level_, array $args_=array());
-
-    /**
-     * @return integer
-     */
-    function level();
 
     /**
      * Internal initialization.

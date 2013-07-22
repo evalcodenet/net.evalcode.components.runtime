@@ -47,7 +47,7 @@ namespace Components;
     {
       foreach(self::$m_stack as $instance)
       {
-        if($name_===$instance->name())
+        if($name_===$instance->name)
           return $instance;
       }
 
@@ -59,9 +59,9 @@ namespace Components;
     /**
      * Push given instance onto the stack.
      *
-     * @param \Components\Log
+     * @param \Components\Log_Appender
      *
-     * @return \Components\Log
+     * @return \Components\Log_Appender
      */
     public static function push(Log_Appender $appender_)
     {
@@ -71,7 +71,7 @@ namespace Components;
         array_push(self::$m_stack, self::$m_current);
 
       self::$m_current=$appender_;
-      self::$m_currentLevel=$appender_->level();
+      self::$m_currentLevel=$appender_->level;
       self::$m_count++;
 
       return $appender_;
@@ -89,7 +89,7 @@ namespace Components;
       if(0<self::$m_count)
       {
         self::$m_current=array_pop(self::$m_stack);
-        self::$m_currentLevel=self::$m_current->level();
+        self::$m_currentLevel=self::$m_current->level;
         self::$m_count--;
       }
 

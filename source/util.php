@@ -144,4 +144,17 @@
 
     return $profiler;
   }
+
+  function hostname()
+  {
+    if(false===isset($GLOBALS['components_hostname']))
+    {
+      if(isset($_SERVER['HTTP_HOST']))
+        $GLOBALS['components_hostname']=$_SERVER['HTTP_HOST'];
+
+      $GLOBALS['components_hostname']=gethostname();
+    }
+
+    return $GLOBALS['components_hostname'];
+  }
 ?>
