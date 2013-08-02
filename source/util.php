@@ -21,58 +21,28 @@
   $GLOBALS['components_debug_profilers_current']=null;
 
 
-  function string_hash($string_)
+  /**
+   * @param mixed.. $arg0_
+   */
+  function dump($arg0_/*, $arg1_..*/)
   {
-    $hash=0;
+    \Components\Debug::_dump(func_get_args());
+  }
 
-    if(false===is_string($string_))
-      $string_=(string)$string_;
-
-    $len=strlen($string_);
-    for($i=0; $i<$len; $i++)
+  /**
+   * @return string
+   */
+  function hostname()
+  {
+    if(false===isset($GLOBALS['components_hostname']))
     {
-      // FIXME (CSH) Stay inside 32bit ...
-      $hash=31*$hash+ord($string_[$i]);
+      if(isset($_SERVER['HTTP_HOST']))
+        $GLOBALS['components_hostname']=$_SERVER['HTTP_HOST'];
+
+      $GLOBALS['components_hostname']=gethostname();
     }
 
-    return $hash;
-  }
-
-  function integer_hash($int0_/*, $int1_, $int2_, ..*/)
-  {
-    if(false===is_array($args=func_get_arg(0)))
-      $args=func_get_args();
-
-    $hash=0;
-    foreach($args as $arg)
-    {
-      // FIXME (CSH) Stay inside 32bit ...
-      $hash=31*$hash+$arg;
-    }
-
-    return $hash;
-  }
-
-  function float_hash($float0_/*, $float1_, $float2_, ..*/)
-  {
-    if(false===is_array($args=func_get_arg(0)))
-      $args=func_get_args();
-
-    $hash=0;
-    foreach($args as $arg)
-      $hash=31*$hash+$arg;
-
-    return $hash;
-  }
-
-  function object_hash($object_)
-  {
-    return spl_object_hash($object_);
-  }
-
-  function dump()
-  {
-    call_user_func_array(array('Components\\Debug', 'dump'), func_get_args());
+    return $GLOBALS['components_hostname'];
   }
 
   /**
@@ -145,16 +115,261 @@
     return $profiler;
   }
 
-  function hostname()
+  /**
+   * @param integer $int_
+   *
+   * @return integer
+   */
+  function integer_hash($int_)
   {
-    if(false===isset($GLOBALS['components_hostname']))
-    {
-      if(isset($_SERVER['HTTP_HOST']))
-        $GLOBALS['components_hostname']=$_SERVER['HTTP_HOST'];
+    return 0x811c9dc5^$int_;
+  }
 
-      $GLOBALS['components_hostname']=gethostname();
+  /**
+   * @param integer.. $int0_
+   *
+   * @return integer
+   */
+  function integer_hash_m($int0_/*, $int1_, $int2_, ..*/)
+  {
+    $hash=0;
+    foreach(func_get_args() as $int)
+      $hash=(0x811c9dc5*$hash)^$int;
+
+    return $hash;
+  }
+
+  /**
+   * @param array|integer $integers_
+   * @return integer
+   */
+  function integer_hash_a(array $integers_)
+  {
+    $hash=0;
+    foreach($integers_ as $int)
+      $hash=(0x811c9dc5*$hash)^$int;
+
+    return $hash;
+  }
+
+  /**
+   * @param float $float_
+   *
+   * @return integer
+   */
+  function float_hash($float_)
+  {
+    return 0x811c9dc5^$float_;
+  }
+
+  /**
+   * @param float.. $float0_
+   *
+   * @return integer
+   */
+  function float_hash_m($float0_/*, $float1_, $float2_, ..*/)
+  {
+    $hash=0;
+    foreach(func_get_args() as $float)
+      $hash=(0x811c9dc5*$hash)^$float;
+
+    return $hash;
+  }
+
+  /**
+   * @param array|float $float_
+   *
+   * @return integer
+   */
+  function float_hash_a(array $float_)
+  {
+    $hash=0;
+    foreach($integers_ as $float)
+      $hash=(0x811c9dc5*$hash)^$float;
+
+    return $hash;
+  }
+
+  /**
+   * @param mixed $object_
+   *
+   * @return integer
+   */
+  function object_hash($object_)
+  {
+    return (int)strtr(spl_object_hash($object_), 'abcdef', '000000');
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash($string_)
+  {
+    return string_hash_fnv($string_);
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_ap($string_)
+  {
+    $hash=0xaaaaaaaa;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+    {
+      if(0==($i&1))
+        $hash^=($hash<<7)^ord($string_[$i])*($hash>>3);
+      else
+        $hash^=~($hash<<11)^ord($string_[$i])^($hash>>5);
     }
 
-    return $GLOBALS['components_hostname'];
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_bkdr($string_)
+  {
+    $hash=0;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+      $hash=(131*$hash)+ord($string_[$i]);
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_bp($string_)
+  {
+    $hash=0;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+      $hash=$hash<<7^ord($string_[$i]);
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_dek($string_)
+  {
+    $hash=$len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+      $hash=(($hash<<5)^($hash>>27))^ord($string_[$i]);
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_djb($string_)
+  {
+    $hash=5381;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+      $hash=(($hash<<5)+$hash)+ord($string_[$i]);
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_fnv($string_)
+  {
+    $hash=0;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+      $hash=(0x811c9dc5*$hash)^ord($string_[$i]);
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_js($string_)
+  {
+    $hash=1315423911;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+      $hash^=(($hash<<5)+ord($string_[$i])+($hash>>2));
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_pjw($string_)
+  {
+    $hash=0;
+    $test=0;
+
+    $len=strlen($string_);
+
+    for($i=0; $i<$len; $i++)
+    {
+      $hash=($hash<<4)+ord($string_[$i]);
+
+      if(0!=($test=$hash&1152921504338411520))
+        $hash=(($hash^($test>>24)) & ~1152921504338411520);
+    }
+
+    return $hash;
+  }
+
+  /**
+   * @param string $string_
+   *
+   * @return integer
+   */
+  function string_hash_sdbm($string_)
+  {
+    $hash=0;
+
+    $len=strlen($string_);
+
+    $i=0;
+    for($i=0; $i<$len; $i++)
+      $hash=ord($string_[$i])+($hash<<6)+($hash<<16)-$hash;
+
+    return $hash;
   }
 ?>

@@ -125,7 +125,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return integer_hash($this->m_major, $this->m_minor, $this->m_revision);
+      return integer_hash_m($this->m_major, $this->m_minor, $this->m_revision);
     }
 
     /**
