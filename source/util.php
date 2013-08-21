@@ -27,6 +27,9 @@
   function dump($arg0_/*, $arg1_..*/)
   {
     \Components\Debug::_dump(func_get_args());
+
+    if(1===func_num_args())
+      return func_get_arg(0);
   }
 
   /**
@@ -197,7 +200,11 @@
    */
   function object_hash($object_)
   {
-    return (int)strtr(spl_object_hash($object_), 'abcdef', '000000');
+    return (int)str_replace(
+      array('a', 'b', 'c', 'd', 'e', 'f'),
+      array('11', '12', '13', '14', '15', '16'),
+      spl_object_hash($object_)
+    );
   }
 
   /**
@@ -371,5 +378,57 @@
       $hash=ord($string_[$i])+($hash<<6)+($hash<<16)-$hash;
 
     return $hash;
+  }
+
+  function exception_as_json(\Exception $e_)
+  {
+    if($e_ instanceof \Components\Runtime_Exception
+      || $e_ instanceof \Components\Runtime_ErrorException)
+      return $e_->toJson();
+
+    $type=get_class($e_);
+
+    return json_encode(array(
+      'type'=>$type,
+      'code'=>$e_->getCode(),
+      'namespace'=>strtolower(strtr($type, '\\_', '//')),
+      'message'=>$e_->getMessage(),
+      'stack'=>$e_->getTraceAsString()
+    ));
+  }
+
+  function exception_header(\Exception $e_)
+  {
+    if(headers_sent())
+      return;
+
+    if($e_ instanceof \Components\Runtime_Exception
+      || $e_ instanceof \Components\Runtime_ErrorException)
+    {
+      $e_->sendHeader();
+    }
+    else
+    {
+      header('HTTP/1.1 500 Internal Server Error', true, 500);
+
+      $hash=exception_log_hash($e_);
+      header("Components-Exception: $hash");
+      if(\Components\Runtime::isManagementAccess())
+        header("$hash: ".exception_as_json($e_));
+    }
+  }
+
+  function exception_log(\Exception $e_)
+  {
+    if($e_ instanceof \Components\Runtime_Exception
+      || $e_ instanceof \Components\Runtime_ErrorException)
+      $e_->log();
+    else
+      \Components\Log::error(strtolower(strtr(get_class($e_), '\\_', '//')), '[%s] %s', exception_log_hash($e_), $e_);
+  }
+
+  function exception_log_hash(\Exception $exception_)
+  {
+    return md5(object_hash($exception_));
   }
 ?>

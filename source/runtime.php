@@ -94,7 +94,7 @@ namespace Components;
      */
     public static function isManagementAccess()
     {
-      return (isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps)) || Environment::isCli() || Environment::isDev();
+      return isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps);
     }
 
     /**
@@ -134,13 +134,7 @@ namespace Components;
     // ACCESSORS
     public function onException(\Exception $e_)
     {
-      if($e_ instanceof Runtime_Exception || $e_ instanceof Runtime_ErrorException)
-        $e_->log();
-      else
-        Log::error(Ns::of($e_), '%s', $e_);
-
-      if(in_array($e_->getCode(), array(E_WARNING, E_NOTICE)))
-        return;
+      exception_log($e_);
 
       // TODO Collect/queue for further developer notifications...
       if(Environment::isCli())
@@ -161,8 +155,7 @@ namespace Components;
       }
       else if(Environment::isDev())
       {
-        if(false===headers_sent())
-          header('HTTP/1.1 500 Internal Server Error', true, 500);
+        exception_header($e_);
 
         printf('<?xml encoding="utf-8" version="1.0"?>%4$s
           <!DOCTYPE HTML>%4$s
@@ -182,6 +175,13 @@ namespace Components;
             $e_->getTraceAsString(),
             PHP_EOL
         );
+      }
+      else
+      {
+        ob_clean();
+        exception_header($e_);
+
+        exit;
       }
     }
 
@@ -609,12 +609,59 @@ namespace Components;
     public function log()
     {
       if($this->m_logEnabled)
-      {
-        Log::error($this->m_namespace, '%s', $this);
+        Log::error($this->m_namespace, '[%s] %s', md5($this->hashCode()), $this);
+    }
 
-        if($cause=$this->getPrevious())
-          Log::error($this->m_namespace, '%s', $cause);
-      }
+    /**
+     * Sends exception details as header: Components-Exception.
+     */
+    public function sendHeader()
+    {
+      header('HTTP/1.1 500 Internal Server Error', true, 500);
+
+      $hash=md5($this->hashCode());
+      header("Components-Exception: $hash");
+      if(Runtime::isManagementAccess())
+        header("$hash: {$this->toJson()}");
+    }
+
+    /**
+     * @return string
+     */
+    public function toJson()
+    {
+      return json_encode(array(
+        'type'=>get_class($this),
+        'code'=>$this->code,
+        'namespace'=>$this->getNamespace(),
+        'message'=>$this->getMessage(),
+        'stack'=>$this->getTraceAsString()
+      ));
+    }
+
+    /**
+     * @return string
+     */
+    public function toXml()
+    {
+      // TODO Embed stack trace.
+      return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
+        <exception>%7$s
+          <type>%1$s</type>%7$s
+          <code>%2$s</code>%7$s
+          <namespace>%3$s</namespace>%7$s
+          <message>%4$s</message>%7$s
+          <source>%5$s</source>%7$s
+          <stack>%6$s</stack>%7$s
+        </exception>',
+        get_class($this),
+        $this->code,
+        $this->getNamespace(),
+        $this->getMessage(),
+        implode(':', array($this->getFile(), $this->getLine())),
+        json_encode($this->getTraceAsString()),
+        PHP_EOL
+      );
     }
     //--------------------------------------------------------------------------
 
@@ -693,12 +740,59 @@ namespace Components;
     public function log()
     {
       if($this->m_logEnabled)
-      {
-        Log::error($this->m_namespace, '%s', $this);
+        Log::error($this->m_namespace, '[%s] %s', md5($this->hashCode()), $this);
+    }
 
-        if($cause=$this->getPrevious())
-          Log::error($cause->m_namespace, '%s', $cause);
-      }
+    /**
+     * Sends exception details as header: Components-Exception.
+     */
+    public function sendHeader()
+    {
+      header('HTTP/1.1 500 Internal Server Error', true, 500);
+
+      $hash=md5($this->hashCode());
+      header("Components-Exception: $hash");
+      if(Runtime::isManagementAccess())
+        header("$hash: {$this->toJson()}");
+    }
+
+    /**
+     * @return string
+     */
+    public function toJson()
+    {
+      return json_encode(array(
+        'type'=>get_class($this),
+        'code'=>$this->code,
+        'namespace'=>$this->getNamespace(),
+        'message'=>$this->getMessage(),
+        'stack'=>$this->getTraceAsString()
+      ));
+    }
+
+    /**
+     * @return string
+     */
+    public function toXml()
+    {
+      // TODO Embed stack trace.
+      return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
+        <exception>%7$s
+          <type>%1$s</type>%7$s
+          <code>%2$s</code>%7$s
+          <namespace>%3$s</namespace>%7$s
+          <message>%4$s</message>%7$s
+          <source>%5$s</source>%7$s
+          <stack>%6$s</stack>%7$s
+        </exception>',
+        get_class($this),
+        $this->code,
+        $this->getNamespace(),
+        $this->getMessage(),
+        implode(':', array($this->getFile(), $this->getLine())),
+        json_encode($this->getTraceAsString()),
+        PHP_EOL
+      );
     }
     //--------------------------------------------------------------------------
 

@@ -84,14 +84,33 @@ namespace Components;
       return self::$m_verbosity=$verbosity_;
     }
 
-    public static function appendToHeaders()
+    public static function appendToBodyEnabled()
+    {
+      return isset(self::$m_flags[self::APPEND_TO_BODY]);
+    }
+
+    public static function appendToHeadersEnabled()
     {
       return isset(self::$m_flags[self::APPEND_TO_HEADERS]);
     }
 
     public static function appendToBody()
     {
-      return isset(self::$m_flags[self::APPEND_TO_BODY]);
+      if(self::$m_active && isset(self::$m_flags[self::APPEND_TO_BODY])
+        && false===Environment::isLive() && Runtime::isManagementAccess())
+        echo \Components\Debug::fetchHtml();
+    }
+
+    public static function appendToHeaders()
+    {
+      if(self::$m_active && isset(self::$m_flags[self::APPEND_TO_HEADERS])
+        && Runtime::isManagementAccess())
+      {
+        if(0<count(self::$m_dump))
+          header('Components-Debug: '.json_encode(self::$m_dump));
+        if(0<count(self::$m_exceptions))
+          header('Components-Debug-Exceptions: '.json_encode(self::$m_exceptions));
+      }
     }
 
     public static function dump()
@@ -142,17 +161,17 @@ namespace Components;
 
       if(0<count(self::$m_dump))
       {
-        $html.='<h2 style="color:#000;background:none;font:bold 15pt/15pt mono;padding:0;margin:40px 0 0;">Components-Debug</h2>';
+        $html.='<h2 style="color:#fff;background:#000;font:bold 15pt/20pt mono;padding:0;margin:40px 0 0;">Components-Debug</h2>';
 
         foreach(self::$m_dump as $dump)
         {
-          $html.='<pre style="display:block;color:#000;background:none;margin:20px 0 0;font:normal 8pt/10pt mono;">';
+          $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/11pt mono;">';
 
           $source=$dump[0];
 
-          $location='';
+          $location=array();
           if(isset($source['file']))
-            $location[]="$source[file]::";
+            $location[]=$source['file'];
           if(isset($source['line']))
             $location[]=$source['line'];
 
@@ -160,7 +179,7 @@ namespace Components;
             $location[]='unknown';
 
           $sourceInfo=array(
-            '['.\Components\String::truncate(implode($location), 90, '..', null, \Components\String::TRUNCATE_REVERSE).']'
+            '<span style="display:block;color:#000;background:#fff;font-weight:bold;">['.implode('::', $location).']</span>'
           );
 
           if(isset($source['class']))
@@ -183,26 +202,43 @@ namespace Components;
       {
         foreach(self::$m_exceptions as $exceptions)
         {
-          $html.='<pre style="display:block;color:#000;background:none;">';
-          $html.='<h2 style="color:#000;background:none;font:bold 15pt/15pt mono;padding:0;margin:40px 0 0;">Components-Exception</h2>';
+          $html.='<pre style="display:block;color:#000;background:#fff;">';
+          $html.='<h2 style="color:#fff;background:#000;font:bold 15pt/20pt mono;padding:0;margin:40px 0 20px 0;">Components-Debug Exception</h2>';
 
           if($exception=reset($exceptions))
           {
             foreach($exceptions as $exception)
             {
+              $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/10pt mono;">';
+
               $location=array();
               if(isset($exception['file']))
-                $location[]="$exception[file]::";
-
+                $location[]=$exception['file'];
               if(isset($exception['line']))
                 $location[]=$exception['line'];
-              else
-                $location[]=0;
 
-              $html.='<pre style="display:block;color:#000;background:none;margin:20px 0 0;font:normal 8pt/10pt mono;">';
-              $html.='<h3 style="color:#000;background:none;font:bold 10pt/10pt mono;padding:0;margin:5px 0;">'.$exception['message'].'</h3>';
-              $html.='<h4 style="color:#000;background:none;font:bold 8pt/8pt mono;padding:0;margin:0 0 20px 0;opacity:0.5;">'.implode($location).'</h4>';
-              $html.=print_r($exception['trace'], true);
+              $html.='<h4 style="color:#000;background:#fff;font:bold 8pt/11pt mono;padding:0;margin:0;">['.implode('::', $location).']</h4>';
+              $html.='<h3 style="color:#000;background:#fff;font:bold 15pt/25pt mono;padding:0;margin:0;">'.$exception['message'].'</h3>';
+
+              $stack=array();
+              foreach($exception['trace'] as $stackTraceElement)
+              {
+                $method=array();
+                if(isset($stackTraceElement['class']))
+                  $method[]=$stackTraceElement['class'];
+                if(isset($stackTraceElement['function']))
+                  $method[]=$stackTraceElement['function'];
+
+                $stack[$stackTraceElement['file']][$stackTraceElement['line']]=implode('::', $method).'()';
+              }
+
+              foreach($stack as $file=>$lines)
+              {
+                $html.="\n$file\n";
+                foreach($lines as $line=>$method)
+                  $html.=sprintf("[%5d] %s\n", $line, $method);
+              }
+
               $html.='</pre>';
             }
           }
@@ -232,12 +268,12 @@ namespace Components;
 
       if(0<count(self::$m_exceptions))
       {
-        $plain.="=== Components-Exceptions ===\n\n";
+        $plain.="=== Components-Debug Exceptions ===\n\n";
         foreach(self::$m_exceptions as $exceptions)
         {
           if(0<count($exceptions))
           {
-            $plain.="-- Components-Exception --\n\n";
+            $plain.="-- Exception --\n\n";
             $plain.=print_r($exceptions, true);
             $plain.="\n\n";
           }
@@ -313,20 +349,6 @@ namespace Components;
       }
 
       return "$dump</debug>";
-    }
-
-    public static function flushHeaders()
-    {
-      if(0<count(self::$m_dump) || 0<count(self::$m_exceptions))
-      {
-        if(static::appendToHeaders())
-        {
-          if(0<count(self::$m_dump))
-            header('Components-Debug: '.json_encode(self::$m_dump));
-          if(0<count(self::$m_exceptions))
-            header('Components-Exceptions: '.json_encode(self::$m_exceptions));
-        }
-      }
     }
 
     public static function clear()
