@@ -229,6 +229,11 @@ namespace Components;
                 if(isset($stackTraceElement['function']))
                   $method[]=$stackTraceElement['function'];
 
+                if(false===isset($stackTraceElement['file']))
+                  $stackTraceElement['file']='internal';
+                if(false===isset($stackTraceElement['line']))
+                  $stackTraceElement['line']=0;
+
                 $stack[$stackTraceElement['file']][$stackTraceElement['line']]=implode('::', $method).'()';
               }
 
