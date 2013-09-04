@@ -191,13 +191,13 @@ namespace Components;
         'components/runtime', $message_, $type_, $filename_, $line_
       );
 
+      exception_log($error);
+
       foreach(self::$m_runtimeErrorHandlers as $errorHandler)
       {
         if(true===$errorHandler->onError($error))
           return;
       }
-
-      return $this->onException($error);
     }
 
     public function onExit()
