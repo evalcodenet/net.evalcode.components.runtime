@@ -219,18 +219,14 @@ namespace Components;
 
 
     // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+    /**     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -240,9 +236,7 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+    /**     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {
@@ -388,9 +382,7 @@ namespace Components;
 
 
     // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::getClasspaths()
+    /**     * @see Components\Classloader::getClasspaths() Components\Classloader::getClasspaths()
      */
     public function getClasspaths()
     {
@@ -412,9 +404,7 @@ namespace Components;
       return null;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::initialize()
+    /**     * @see Components\Classloader::initialize() Components\Classloader::initialize()
      */
     public function initialize()
     {
@@ -450,9 +440,7 @@ namespace Components;
         $this->m_resourceNameForType=array_flip($this->m_resourceTypeForName);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::loadClass()
+    /**     * @see Components\Classloader::loadClass() Components\Classloader::loadClass()
      */
     public function loadClass($clazz_)
     {
@@ -511,18 +499,14 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+    /**     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -533,9 +517,7 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+    /**     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {
@@ -648,7 +630,7 @@ namespace Components;
       return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
         <exception>%7$s
           <type>%1$s</type>%7$s
-          <code>%2$s</code>%7$s
+          <pre>%2$s</pre>%7$s
           <namespace>%3$s</namespace>%7$s
           <message>%4$s</message>%7$s
           <source>%5$s</source>%7$s
@@ -667,18 +649,14 @@ namespace Components;
 
 
     // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+    /**     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -688,9 +666,7 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+    /**     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {
@@ -779,7 +755,7 @@ namespace Components;
       return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
         <exception>%7$s
           <type>%1$s</type>%7$s
-          <code>%2$s</code>%7$s
+          <pre>%2$s</pre>%7$s
           <namespace>%3$s</namespace>%7$s
           <message>%4$s</message>%7$s
           <source>%5$s</source>%7$s
@@ -798,18 +774,14 @@ namespace Components;
 
 
     // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+    /**     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -819,9 +791,7 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+    /**     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {

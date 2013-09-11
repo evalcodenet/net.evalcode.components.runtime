@@ -30,18 +30,14 @@ namespace Components;
 
 
     // OVERRIDES
-    /**
-     * (non-PHPdoc)
-     * @see Classloader::getClasspaths()
+    /**     * @see Classloader::getClasspaths() Classloader::getClasspaths()
      */
     public function getClasspaths()
     {
       return $this->m_classpaths;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Classloader::loadClass()
+    /**     * @see Classloader::loadClass() Classloader::loadClass()
      */
     public function loadClass($clazz_)
     {
@@ -53,27 +49,21 @@ namespace Components;
       return true;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Classloader::initialize()
+    /**     * @see Classloader::initialize() Classloader::initialize()
      */
     public function initialize()
     {
       $this->addClasspath($this->m_namespace, $this->m_path, $this->m_patternInclude);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+    /**     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -83,9 +73,7 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+    /**     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {

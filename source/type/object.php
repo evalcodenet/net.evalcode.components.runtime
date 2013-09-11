@@ -53,9 +53,9 @@ namespace Components;
      *   Normally this would be a string in a standardized format representing
      *   the object's state for e.g. logging and debugging, similar to this:
      * </p>
-     * <code>
+     * <pre>
      *   return sprintf('%s@%s{member: %s}', __CLASS__, $this->hashCode(), $member);
-     * </code>
+     * </pre>
      *
      * <p>
      *   However there are cases where the preferred implementation differs.

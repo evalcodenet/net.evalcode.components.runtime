@@ -27,9 +27,7 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::initialize()
+    /**     * @see Components\Classloader::initialize() Components\Classloader::initialize()
      */
     public function initialize()
     {

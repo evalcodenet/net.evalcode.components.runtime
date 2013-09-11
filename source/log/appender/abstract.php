@@ -57,63 +57,49 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::debug()
+    /**     * @see Components\Log_Appender::debug() Components\Log_Appender::debug()
      */
     public function debug($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
       $this->append(Log::DEBUG, func_get_args());
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::info()
+    /**     * @see Components\Log_Appender::info() Components\Log_Appender::info()
      */
     public function info($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
       $this->append(Log::INFO, func_get_args());
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::warn()
+    /**     * @see Components\Log_Appender::warn() Components\Log_Appender::warn()
      */
     public function warn($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
       $this->append(Log::WARN, func_get_args());
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::error()
+    /**     * @see Components\Log_Appender::error() Components\Log_Appender::error()
      */
     public function error($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
       $this->append(Log::ERROR, func_get_args());
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::fatal()
+    /**     * @see Components\Log_Appender::fatal() Components\Log_Appender::fatal()
      */
     public function fatal($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
       $this->append(Log::FATAL, func_get_args());
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::initialize()
+    /**     * @see Components\Log_Appender::initialize() Components\Log_Appender::initialize()
      */
     public function initialize()
     {
       // Override if necessary ..
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+    /**     * @see Components\Object::equals() Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -123,18 +109,14 @@ namespace Components;
       return false;
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
      */
     public function hashCode()
     {
       return string_hash($this->name);
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+    /**     * @see Components\Object::__toString() Components\Object::__toString()
      */
     public function __toString()
     {

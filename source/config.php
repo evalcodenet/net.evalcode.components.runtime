@@ -39,9 +39,7 @@ namespace Components;
       return self::$m_instances[$component_];
     }
 
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Value_String::valueOf()
+    /**     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
      *
      * @return \Components\Config
      */
@@ -71,9 +69,7 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Value_String::value()
+    /**     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {

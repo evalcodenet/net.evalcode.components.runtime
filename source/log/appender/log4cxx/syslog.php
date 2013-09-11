@@ -15,9 +15,7 @@ namespace Components;
   class Log_Appender_Log4cxx_Syslog extends Log_Appender_Log4cxx
   {
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see \Components\Object::__toString()
+    /**     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {

@@ -35,9 +35,7 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::append()
+    /**     * @see Components\Log_Appender::append() Components\Log_Appender::append()
      */
     public function append($level_, array $args_=array())
     {
