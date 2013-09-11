@@ -112,4 +112,15 @@ namespace Components;
     private static $m_isSupported;
     //--------------------------------------------------------------------------
   }
+
+
+    // COMPATIBILITY HELPERS
+    if(false===function_exists('apc_exists'))
+    {
+      function apc_exists($key_)
+      {
+        return false!==apc_fetch($key_);
+      }
+    }
+    //--------------------------------------------------------------------------
 ?>
