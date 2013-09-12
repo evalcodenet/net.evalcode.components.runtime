@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Log_Appender
    *
-   * @package net.evalcode.components
-   * @subpackage log
+   * @api
+   * @package net.evalcode.components.log
    *
    * @author evalcode.net
    *
@@ -20,42 +20,37 @@ namespace Components;
    */
   interface Log_Appender extends Object
   {
-    // ACCESSORS/MUTATORS
+    // ACCESSORS
     /**
      * @param string $namespace_
      * @param string $message_
      * @param mixed.. $args..
      */
     function debug($namespace_, $message_/*, $arg0_, $arg1_, ..*/);
-
     /**
      * @param string $namespace_
      * @param string $message_
      * @param mixed.. $args..
      */
     function info($namespace_, $message_/*, $arg0_, $arg1_, ..*/);
-
     /**
      * @param string $namespace_
      * @param string $message_
      * @param mixed.. $args..
      */
     function warn($namespace_, $message_/*, $arg0_, $arg1_, ..*/);
-
     /**
      * @param string $namespace_
      * @param string $message_
      * @param mixed.. $args..
      */
     function error($namespace_, $message_/*, $arg0_, $arg1_, ..*/);
-
     /**
      * @param string $namespace_
      * @param string $message_
      * @param mixed.. $args..
      */
     function fatal($namespace_, $message_/*, $arg0_, $arg1_, ..*/);
-
     /**
      * @param integer $level_
      * @param array $args_
@@ -66,6 +61,8 @@ namespace Components;
 
     /**
      * Internal initialization.
+     *
+     * @internal
      */
     function initialize();
     //--------------------------------------------------------------------------

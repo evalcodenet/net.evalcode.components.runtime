@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Cloneable
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */

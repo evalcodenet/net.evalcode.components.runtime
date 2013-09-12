@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Enumeration
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -96,7 +96,7 @@ namespace Components;
     }
 
     /**
-     * @return array|string
+     * @return string[]
      */
     public static function values()
     {
@@ -251,7 +251,8 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Components\Comparable::compareTo() Components\Comparable::compareTo()
+    /**
+     * @see \Components\Comparable::compareTo() \Components\Comparable::compareTo()
      */
     public function compareTo($object_)
     {
@@ -266,14 +267,16 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return string_hash($this->m_name);
     }
 
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -283,21 +286,24 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
       return $this->m_name;
     }
 
-    /**     * @see Components\Serializable_Php::__sleep() Components\Serializable_Php::__sleep()
+    /**
+     * @see \Components\Serializable_Php::__sleep() \Components\Serializable_Php::__sleep()
      */
     public function __sleep()
     {
       return array('m_key', 'm_name');
     }
 
-    /**     * @see Components\Serializable_Php::__wakeup() Components\Serializable_Php::__wakeup()
+    /**
+     * @see \Components\Serializable_Php::__wakeup() \Components\Serializable_Php::__wakeup()
      */
     public function __wakeup()
     {
@@ -306,14 +312,15 @@ namespace Components;
 
     /**
      * (non-PHPdoc)
-     * @see Components\Serializable::serialVersionUid() Components\Serializable::serialVersionUid()
+     * @see \Components\Serializable::serialVersionUid() \Components\Serializable::serialVersionUid()
      */
     public function serialVersionUid()
     {
       return 1;
     }
 
-    /**     * @see Components\Value_String::value() Components\Value_String::value()
+    /**
+     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {
@@ -332,7 +339,7 @@ namespace Components;
      */
     private static $m_enums=array();
     /**
-     * @var array|\Components\Enumeration
+     * @var \Components\Enumeration[]
      */
     private static $m_enumInstances=array();
 

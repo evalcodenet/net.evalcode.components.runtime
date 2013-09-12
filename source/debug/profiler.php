@@ -11,8 +11,8 @@ namespace Components;
    *
    * Supports profiling in a forked child process for more accurate results.
    *
-   * @package net.evalcode.components
-   * @subpackage debug
+   * @api
+   * @package net.evalcode.components.debug
    *
    * @author evalcode.net
    */
@@ -412,7 +412,8 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -422,14 +423,16 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {

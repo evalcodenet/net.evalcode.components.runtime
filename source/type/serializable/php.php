@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Serializable_Php
    *
-   * @package net.evalcode.components
-   * @subpackage type.serializable
+   * @api
+   * @package net.evalcode.components.type
+   * @subpackage serializable
    *
    * @author evalcode.net
    */
@@ -19,9 +20,8 @@ namespace Components;
      * @return string
      */
     function __sleep();
-
     /**
-     * @return Serializable_Php
+     * @return \Components\Serializable_Php
      */
     function __wakeup();
     //--------------------------------------------------------------------------

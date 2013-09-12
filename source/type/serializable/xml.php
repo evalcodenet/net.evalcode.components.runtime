@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Serializable_Xml
    *
-   * @package net.evalcode.components
-   * @subpackage type.serializable
+   * @api
+   * @package net.evalcode.components.type
+   * @subpackage serializable
    *
    * @author evalcode.net
    */
@@ -19,11 +20,10 @@ namespace Components;
      * @return string
      */
     function serializeXml();
-
     /**
      * @param string $xml_
      *
-     * @return Serializable_Xml
+     * @return \Components\Serializable_Xml
      */
     function unserializeXml($xml_);
     //--------------------------------------------------------------------------

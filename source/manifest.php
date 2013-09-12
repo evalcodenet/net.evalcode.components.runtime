@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Manifest
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -48,7 +48,8 @@ namespace Components;
       return self::$m_instances[$name_];
     }
 
-    /**     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
+    /**
+     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
      *
      * @return \Components\Manifest
      */
@@ -107,7 +108,7 @@ namespace Components;
     }
 
     /**
-     * @return array|Components\Manifest
+     * @return \Components\Manifest[]
      */
     public function getDependencies()
     {
@@ -152,21 +153,24 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see \Components\Value_String::value() \Components\Value_String::value()
+    /**
+     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {
       return $this->m_component;
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return string_hash($this->m_component);
     }
 
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -176,7 +180,8 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -192,14 +197,13 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|Components\Manifest
+     * @var \Components\Manifest[]
      */
     private static $m_instances=array();
     /**
-     * @var array|Components\Version
+     * @var \Components\Version[]
      */
     private static $m_versions=array();
-
     /**
      * @var string
      */
@@ -218,7 +222,7 @@ namespace Components;
     /**
      * @return \Components\Manifest
      *
-     * @throws Runtime_Exception
+     * @throws \Components\Runtime_Exception
      */
     private function initialized()
     {

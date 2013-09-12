@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Value_Integer
    *
-   * @package net.evalcode.components
-   * @subpackage type.value
+   * @api
+   * @package net.evalcode.components.type
+   * @subpackage value
    *
    * @author evalcode.net
    *

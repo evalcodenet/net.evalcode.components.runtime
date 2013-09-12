@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Log_Appender_Log4cxx
    *
-   * @package net.evalcode.components
-   * @subpackage log.appender
+   * @api
+   * @package net.evalcode.components.log
+   * @subpackage appender
    *
    * @author evalcode.net
    */
@@ -27,8 +28,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
-    /**     * @see Components\Log_Appender::append() Components\Log_Appender::append()
+    // OVERRIDES
+    /**
+     * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
      */
     public function append($level_, array $args_=array())
     {
@@ -37,7 +39,8 @@ namespace Components;
       );
     }
 
-    /**     * @see Components\Log_Appender::initialize() Components\Log_Appender::initialize()
+    /**
+     * @see \Components\Log_Appender::initialize() \Components\Log_Appender::initialize()
      */
     public function initialize()
     {

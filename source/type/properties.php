@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Properties
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    *
@@ -27,21 +27,24 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Components\Collection::arrayValue() Components\Collection::arrayValue()
+    /**
+     * @see \Components\Collection::arrayValue() \Components\Collection::arrayValue()
      */
     public function arrayValue()
     {
       return $this->m_properties;
     }
 
-    /**     * @see Components\Collection::isEmpty() Components\Collection::isEmpty()
+    /**
+     * @see \Components\Collection::isEmpty() \Components\Collection::isEmpty()
      */
     public function isEmpty()
     {
       return 0===count($this->m_properties);
     }
 
-    /**     * @see Components\Collection_Mutable::isEmpty() Components\Collection_Mutable::isEmpty()
+    /**
+     * @see \Components\Collection_Mutable::isEmpty() \Components\Collection_Mutable::isEmpty()
      *
      * @todo Add interface \Components\Collection_Mutable.
      */
@@ -50,7 +53,8 @@ namespace Components;
       $this->m_properties=array();
     }
 
-    /**     * @see Components\Countable::count() Components\Countable::count()
+    /**
+     * @see \Components\Countable::count() \Components\Countable::count()
      */
     public function count()
     {
@@ -109,7 +113,8 @@ namespace Components;
       return $this;
     }
 
-    /**     * @see Components\Cloneable::__clone() Components\Cloneable::__clone()
+    /**
+     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
      */
     public function __clone()
     {
@@ -117,14 +122,16 @@ namespace Components;
       return unserialize(serialize($this));
     }
 
-    /**     * @see Components\Serializable_Json::serializeJson() Components\Serializable_Json::serializeJson()
+    /**
+     * @see \Components\Serializable_Json::serializeJson() \Components\Serializable_Json::serializeJson()
      */
     public function serializeJson()
     {
       return json_encode($this->m_properties);
     }
 
-    /**     * @see Components\Serializable_Json::unserializeJson() Components\Serializable_Json::unserializeJson()
+    /**
+     * @see \Components\Serializable_Json::unserializeJson() \Components\Serializable_Json::unserializeJson()
      *
      * @return Compoents\Properties
      */
@@ -135,35 +142,40 @@ namespace Components;
       return $this;
     }
 
-    /**     * @see Components\Serializable_Php::__sleep() Components\Serializable_Php::__sleep()
+    /**
+     * @see \Components\Serializable_Php::__sleep() \Components\Serializable_Php::__sleep()
      */
     public function __sleep()
     {
       return array('m_properties');
     }
 
-    /**     * @see Components\Serializable_Php::__wakeup() Components\Serializable_Php::__wakeup()
+    /**
+     * @see \Components\Serializable_Php::__wakeup() \Components\Serializable_Php::__wakeup()
      */
     public function __wakeup()
     {
 
     }
 
-    /**     * @see Components\Serializable::serialVersionUid() Components\Serializable::serialVersionUid()
+    /**
+     * @see \Components\Serializable::serialVersionUid() \Components\Serializable::serialVersionUid()
      */
     public function serialVersionUid()
     {
       return 1;
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -173,7 +185,8 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -187,7 +200,7 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|mixed
+     * @var array
      */
     protected $m_properties=array();
     //--------------------------------------------------------------------------

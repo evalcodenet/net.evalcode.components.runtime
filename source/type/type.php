@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Type
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -68,7 +68,8 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -78,14 +79,16 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return string_hash($this->m_name);
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {

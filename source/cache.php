@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Cache
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.cache
    *
    * @author evalcode.net
    */
@@ -179,11 +179,11 @@ namespace Components;
      */
     private static $m_enabled;
     /**
-     * @var Components\Cache_Backend
+     * @var \Components\Cache_Backend
      */
     private static $m_backend;
     /**
-     * @var Components\Cache_Backend
+     * @var \Components\Cache_Backend
      */
     private static $m_backendDisabled;
     //--------------------------------------------------------------------------

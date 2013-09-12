@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Environment
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -490,29 +490,33 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
-    /**     * @see \Components\Value_String::value() \Components\Value_String::value()
+    // OVERRIDES
+    /**
+     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {
       return $this->m_name;
     }
 
-    /**     * @see Components\Cloneable::__clone() Components\Cloneable::__clone()
+    /**
+     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
      */
     public function __clone()
     {
       return new self($this->m_type);
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return string_hash($this->m_name);
     }
 
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -522,7 +526,8 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -533,7 +538,7 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|string
+     * @var string[]
      */
     private static $m_names=array(
       self::ALPHA=>'alpha',
@@ -543,19 +548,17 @@ namespace Components;
       self::LIVE=>'live'
     );
     /**
-     * @var array|Components\Environment
+     * @var \Components\Environment[]
      */
     private static $m_stack=array();
     /**
      * @var boolean
      */
     private static $m_embedded=false;
-
     /**
-     * @var Components\Environment
+     * @var \Components\Environment
      */
     private static $m_current;
-
     /**
      * @var string
      */

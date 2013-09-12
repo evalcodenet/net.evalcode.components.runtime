@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Value_Float
    *
-   * @package net.evalcode.components
-   * @subpackage type.value
+   * @api
+   * @package net.evalcode.components.type
+   * @subpackage value
    *
    * @author evalcode.net
    *

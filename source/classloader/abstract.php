@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Classloader_Abstract
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.classloader
    *
    * @author evalcode.net
    */
@@ -30,14 +30,16 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Classloader::getClasspaths() Classloader::getClasspaths()
+    /**
+     * @see \Components\Classloader::getClasspaths() \Components\Classloader::getClasspaths()
      */
     public function getClasspaths()
     {
       return $this->m_classpaths;
     }
 
-    /**     * @see Classloader::loadClass() Classloader::loadClass()
+    /**
+     * @see \Components\Classloader::loadClass() \Components\Classloader::loadClass()
      */
     public function loadClass($clazz_)
     {
@@ -49,21 +51,24 @@ namespace Components;
       return true;
     }
 
-    /**     * @see Classloader::initialize() Classloader::initialize()
+    /**
+     * @see \Components\Classloader::initialize() \Components\Classloader::initialize()
      */
     public function initialize()
     {
       $this->addClasspath($this->m_namespace, $this->m_path, $this->m_patternInclude);
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return object_hash($this);
     }
 
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -73,7 +78,8 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {

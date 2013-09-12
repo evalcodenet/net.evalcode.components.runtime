@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Value
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -22,7 +22,6 @@ namespace Components;
      * @return mixed
      */
     function value();
-
     /**
      * Returns a instance of this type for given value.
      *

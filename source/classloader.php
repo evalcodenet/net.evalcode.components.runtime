@@ -11,27 +11,25 @@ namespace Components;
    *   Components runtime classloader API.
    * </p>
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.classloader
    *
    * @author evalcode.net
    *
-   * @see Components\Classloader_Embedded Components\Classloader_Embedded
-   * @see Components\Classloader_Standalone Components\Classloader_Standalone
+   * @see \Components\Classloader_Embedded \Components\Classloader_Embedded
+   * @see \Components\Classloader_Standalone \Components\Classloader_Standalone
    */
   interface Classloader extends Object
   {
     // ACCESSORS
     /**
-     * @return string|array
+     * @return string[]
      */
     function getClasspaths();
-
     /**
      * @param string $class_
      */
     function loadClass($class_);
-
     /**
      * Triggered during bootstrap.
      */

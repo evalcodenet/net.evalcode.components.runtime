@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Config
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -39,7 +39,8 @@ namespace Components;
       return self::$m_instances[$component_];
     }
 
-    /**     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
+    /**
+     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
      *
      * @return \Components\Config
      */
@@ -68,8 +69,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
-    /**     * @see \Components\Value_String::value() \Components\Value_String::value()
+    // OVERRIDES
+    /**
+     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {

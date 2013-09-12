@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Memory_Shared_Shm_Temporary
    *
-   * @package net.evalcode.components
-   * @subpackage memory.shared.shm
+   * @package net.evalcode.components.memory
+   * @subpackage shared.shm
    *
    * @author evalcode.net
    */
@@ -49,7 +49,8 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -59,14 +60,16 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return string_hash($this->m_file);
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -80,7 +83,8 @@ namespace Components;
       );
     }
 
-    /**     * @see Components\Cloneable::__clone() Components\Cloneable::__clone()
+    /**
+     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
      */
     public function __clone()
     {
@@ -89,7 +93,8 @@ namespace Components;
       );
     }
 
-    /**     * @see Components\Serializable_Php::serialize() Components\Serializable_Php::serialize()
+    /**
+     * @see \Components\Serializable_Php::serialize() \Components\Serializable_Php::serialize()
      */
     public function serialize()
     {
@@ -98,7 +103,8 @@ namespace Components;
       );
     }
 
-    /**     * @see Components\Serializable_Php::unserialize() Components\Serializable_Php::unserialize()
+    /**
+     * @see \Components\Serializable_Php::unserialize() \Components\Serializable_Php::unserialize()
      */
     public function unserialize($segmentId_)
     {
@@ -107,7 +113,8 @@ namespace Components;
       );
     }
 
-    /**     * @see Components\Serializable::serialVersionUid() Components\Serializable::serialVersionUid()
+    /**
+     * @see \Components\Serializable::serialVersionUid() \Components\Serializable::serialVersionUid()
      */
     public function serialVersionUid()
     {

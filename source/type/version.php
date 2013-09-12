@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Version
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -74,7 +74,8 @@ namespace Components;
 
 
     // OVERRIDES
-    /**     * @see Components\Comparable::compareTo() Components\Comparable::compareTo()
+    /**
+     * @see \Components\Comparable::compareTo() \Components\Comparable::compareTo()
      */
     public function compareTo($object_)
     {
@@ -108,21 +109,24 @@ namespace Components;
       throw new Runtime_Exception('runtime/version', 'Can not compare to instance of unknown type.');
     }
 
-    /**     * @see Components\Cloneable::__clone() Components\Cloneable::__clone()
+    /**
+     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
      */
     public function __clone()
     {
       return new static($this->m_major, $this->m_minor, $this->m_revision);
     }
 
-    /**     * @see Components\Object::hashCode() Components\Object::hashCode()
+    /**
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
       return integer_hash_m($this->m_major, $this->m_minor, $this->m_revision);
     }
 
-    /**     * @see Components\Object::equals() Components\Object::equals()
+    /**
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -136,7 +140,8 @@ namespace Components;
       return false;
     }
 
-    /**     * @see Components\Object::__toString() Components\Object::__toString()
+    /**
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {

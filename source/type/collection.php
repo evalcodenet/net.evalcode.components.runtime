@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Collection
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -21,7 +21,6 @@ namespace Components;
      * @return boolean
      */
     function isEmpty();
-
     /**
      * Returns copy of array used as internal storage for this collection.
      *

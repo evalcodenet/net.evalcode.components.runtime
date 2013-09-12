@@ -5,10 +5,10 @@ namespace Components;
 
 
   /**
-   * Cloneable
+   * Countable
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    *
