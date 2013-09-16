@@ -94,6 +94,34 @@ namespace Components;
     }
 
     /**
+     * Creates and returns a new empty instance.
+     *
+     * Expected stage can be defined via one of:
+     * <li>Constant COMPONENTS_ENVIRONMENT</li>
+     * <li>$_SERVER variable COMPONENTS_ENVIRONMENT</li>
+     *
+     * Returns a LIVE instance if no stage is defined.
+     *
+     * @return \Components\Environment
+     */
+    public static function create()
+    {
+      if(defined('COMPONENTS_ENVIRONMENT'))
+        return new static(COMPONENTS_ENVIRONMENT);
+
+      if(isset($_SERVER['COMPONENTS_ENVIRONMENT']))
+      {
+        $types=array_flip(self::$m_names);
+        $name=strtolower($_SERVER['COMPONENTS_ENVIRONMENT']);
+
+        if(isset($types[$name]))
+          return new static($types[$name]);
+      }
+
+      return new static(self::LIVE);
+    }
+
+    /**
      * @return \Components\Environment
      */
     public static function LIVE()

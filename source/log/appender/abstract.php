@@ -53,6 +53,7 @@ namespace Components;
       $this->level=$level_;
 
       $this->m_timezone=date('P');
+      $this->host=hostname();
     }
     //--------------------------------------------------------------------------
 

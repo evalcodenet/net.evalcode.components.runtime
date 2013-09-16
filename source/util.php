@@ -56,7 +56,7 @@
   function profile($description_)
   {
     if(null===$GLOBALS['components_debug_profilers_current'])
-      throw new Runtime_Exception('util', 'No profiling session started.');
+      throw new Runtime_Exception('components/runtime/util', 'No profiling session started.');
 
     $GLOBALS['components_debug_profilers_current']->splitTime($description_);
   }
@@ -81,7 +81,7 @@
   function profile_end()
   {
     if(null===$GLOBALS['components_debug_profilers_current'])
-      throw new Runtime_Exception('util', 'No profiling session started.');
+      throw new Runtime_Exception('components/runtime/util', 'No profiling session started.');
 
     $profiler=$GLOBALS['components_debug_profilers_current']->result();
     \Components\Debug_Profiler::pop($profiler);
@@ -430,5 +430,30 @@
   function exception_log_hash(\Exception $exception_)
   {
     return md5(object_hash($exception_));
+  }
+
+
+  /**
+   * Bootstrap Components Runtime
+   *
+   * @author evalcode.net
+   */
+  function runtime_bootstrap()
+  {
+    if(defined(__METHOD__))
+      return;
+
+    define(__METHOD__, true);
+
+    if(false===defined('COMPONENTS_ENVIRONMENT_CONFIG'))
+      define('COMPONENTS_ENVIRONMENT_CONFIG', dirname(dirname(__DIR__)).'/app/config/environment.php');
+
+    include_once COMPONENTS_ENVIRONMENT_CONFIG;
+
+    \Components\Runtime_Classloader::push(
+      new \Components\Classloader_Components(\Components\Environment::pathComponents())
+    );
+
+    \Components\Runtime::create();
   }
 ?>
