@@ -52,6 +52,8 @@ namespace Components;
         self::$m_version=new Version(
           COMPONENTS_RUNTIME_VERSION_MAJOR, COMPONENTS_RUNTIME_VERSION_MINOR, COMPONENTS_RUNTIME_VERSION_REVISION
         );
+
+        Environment::includeConfig('runtime.php');
       }
 
       return self::$m_instance;
@@ -257,7 +259,7 @@ namespace Components;
     /**
      * @var string[]
      */
-    private static $m_managementIps=array();
+    private static $m_managementIps=array('127.0.0.1', '::1');
     /**
      * @var \Components\Runtime_Error_Handler[]
      */

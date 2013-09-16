@@ -173,7 +173,7 @@ JS;
             {
               foreach($exceptions as $exception)
               {
-                $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/10pt mono;">';
+                $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 50px 0;font:normal 8pt/10pt mono;">';
 
                 $location=array();
                 if(isset($exception['file']))
