@@ -98,16 +98,155 @@ namespace Components;
     {
       if(self::$m_active && isset(self::$m_flags[self::APPEND_TO_BODY])
         && false===Environment::isLive() && Runtime::isManagementAccess())
-        echo \Components\Debug::fetchHtml();
+      {
+        if(0<count(self::$m_dump))
+        {
+          $debug=array();
+
+          foreach(self::$m_dump as $dump)
+          {
+            $source=$dump[0];
+
+            $line=0;
+            $file='unknown';
+
+            if(isset($source['file']))
+              $file=$source['file'];
+            if(isset($source['line']))
+              $line=$source['line'];
+
+            foreach($dump[1] as $arg)
+              $debug[$file][$line][]=var_export($arg, true);
+          }
+
+          $json=json_encode($debug);
+
+          echo <<<JS
+            <script type="text/javascript">
+              var cdbg=$json;
+              if("undefined"!=typeof(console))
+              {
+                for(var dsf in cdbg)
+                {
+                  for(var dsl in cdbg[dsf])
+                  {
+                    console.debug("[components/debug] "+dsf+":"+dsl);
+                    for(var ds in cdbg[dsf][dsl])
+                      console.debug("[components/debug]   "+cdbg[dsf][dsl][ds]);
+                  }
+                }
+              }
+              else
+              {
+                document.write("<pre class=\"components_debug\"><ul>");
+
+                for(var dsf in cdbg)
+                {
+                  document.write("<li>"+dsf+"<ul>");
+                  for(var dsl in cdbg[dsf])
+                  {
+                    document.write("<li>"+dsl+"<ul>");
+                    for(var ds in cdbg[dsf][dsl])
+                      document.write("<li>"+cdbg[dsf][dsl][ds]+"</li>");
+                    document.write("</ul></li>");
+                  }
+                  document.write("</ul></li>");
+                }
+
+                document.write("</ul></pre>");
+              }
+            </script>
+JS;
+        }
+
+        // TODO Use fetchHtml
+
+        $html='';
+        if(0<count(self::$m_exceptions))
+        {
+          foreach(self::$m_exceptions as $exceptions)
+          {
+            $html.='<pre style="display:block;color:#000;background:#fff;">';
+            $html.='<h2 style="color:#fff;background:#000;font:bold 15pt/20pt mono;padding:0;margin:40px 0 20px 0;">Components-Debug Exception</h2>';
+
+            if($exception=reset($exceptions))
+            {
+              foreach($exceptions as $exception)
+              {
+                $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/10pt mono;">';
+
+                $location=array();
+                if(isset($exception['file']))
+                  $location[]=$exception['file'];
+                if(isset($exception['line']))
+                  $location[]=$exception['line'];
+
+                $html.='<h4 style="color:#000;background:#fff;font:bold 8pt/11pt mono;padding:0;margin:0;">['.implode('::', $location).']</h4>';
+                $html.='<h3 style="color:#000;background:#fff;font:bold 15pt/25pt mono;padding:0;margin:0;">'.$exception['message'].'</h3>';
+
+                $stack=array();
+                foreach($exception['trace'] as $stackTraceElement)
+                {
+                  $method=array();
+                  if(isset($stackTraceElement['class']))
+                    $method[]=$stackTraceElement['class'];
+                  if(isset($stackTraceElement['function']))
+                    $method[]=$stackTraceElement['function'];
+
+                  if(false===isset($stackTraceElement['file']))
+                    $stackTraceElement['file']='internal';
+                  if(false===isset($stackTraceElement['line']))
+                    $stackTraceElement['line']=0;
+
+                  $stack[$stackTraceElement['file']][$stackTraceElement['line']]=implode('::', $method).'()';
+                }
+
+                foreach($stack as $file=>$lines)
+                {
+                  $html.="\n$file\n";
+                  foreach($lines as $line=>$method)
+                    $html.=sprintf("[%5d] %s\n", $line, $method);
+                }
+
+                $html.='</pre>';
+              }
+            }
+
+            $html.='</pre>';
+          }
+        }
+
+        if(trim($html))
+          echo "<pre style=\"display:block;position:relative;float:none;clear:both;z-index:99999;zoom:1;color:#000;background:#fff;text-align:left;padding:10px 20px;margin:0;border:0 none;width:auto;height:auto;font:normal normal 10pt/12pt mono;\">$html</pre>";
+
+      }
     }
 
     public static function appendToHeaders()
     {
-      if(self::$m_active && isset(self::$m_flags[self::APPEND_TO_HEADERS])
-        && Runtime::isManagementAccess())
+      if(self::$m_active && isset(self::$m_flags[self::APPEND_TO_HEADERS]) && Runtime::isManagementAccess())
       {
         if(0<count(self::$m_dump))
-          header('Components-Debug: '.json_encode(self::$m_dump));
+        {
+          $header=array();
+          foreach(self::$m_dump as $dump)
+          {
+            $source=$dump[0];
+
+            $line=0;
+            $file='unknown';
+            if(isset($source['file']))
+              $file=$source['file'];
+            if(isset($source['line']))
+              $line=$source['line'];
+
+            foreach($dump[1] as $arg)
+              $header[$file][$line][]=var_export($arg, true);
+          }
+
+          header('Components-Debug: '.json_encode($header));
+        }
+
         if(0<count(self::$m_exceptions))
           header('Components-Debug-Exceptions: '.json_encode(self::$m_exceptions));
       }
@@ -161,41 +300,40 @@ namespace Components;
 
       if(0<count(self::$m_dump))
       {
-        $html.='<h2 style="color:#fff;background:#000;font:bold 15pt/20pt mono;padding:0;margin:40px 0 0;">Components-Debug</h2>';
-
+        $debug=array();
         foreach(self::$m_dump as $dump)
         {
-          $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/11pt mono;">';
-
           $source=$dump[0];
 
-          $location=array();
+          $line=0;
+          $file='unknown';
+
           if(isset($source['file']))
-            $location[]=$source['file'];
+            $file=$source['file'];
           if(isset($source['line']))
-            $location[]=$source['line'];
-
-          if(1>count($location))
-            $location[]='unknown';
-
-          $sourceInfo=array(
-            '<span style="display:block;color:#000;background:#fff;font-weight:bold;">['.implode('::', $location).']</span>'
-          );
-
-          if(isset($source['class']))
-            $sourceInfo[]=$source['class'];
-          if(isset($source['type']))
-            $sourceInfo[]=$source['type'];
-          if(isset($source['function']))
-            $sourceInfo[]=$source['function'];
-
-          $html.=print_r(implode(' ', $sourceInfo).'(): ', true);
+            $line=$source['line'];
 
           foreach($dump[1] as $arg)
-            $html.=var_export($arg, true);
-
-          $html.='</pre>';
+            $debug[$file][$line][]=var_export($arg, true);
         }
+
+        $html.='<h2 style="color:#fff;background:#000;font:bold 15pt/20pt mono;padding:0;margin:40px 0 0;">Components-Debug</h2>';
+        $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/11pt mono;">';
+
+        foreach($debug as $file=>$lines)
+        {
+          $html.="<span style=\"display:block;color:#000;background:#fff;\">$file</span>";
+
+          foreach($lines as $line=>$statements)
+          {
+            $html.="<div><span style=\"color:#000;background:#fff;margin:10px 0 0;\">$line:</span>";
+            foreach($statements as $statement)
+              $html.="<div>$statement</div>";
+            $html.="</div>";
+          }
+        }
+
+        $html.='</pre>';
       }
 
       if(0<count(self::$m_exceptions))
@@ -480,7 +618,7 @@ namespace Components;
     /*package*/ static function _dump(array $args_)
     {
       $source=debug_backtrace(false);
-      $source=$source[2];
+      $source=$source[1];
       $source['args']=0;
 
       self::$m_dump[]=array($source, $args_);
