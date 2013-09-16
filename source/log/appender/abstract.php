@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Log_Appender_Abstract
    *
-   * @package net.evalcode.components
-   * @subpackage log.appender
+   * @api
+   * @package net.evalcode.components.log
+   * @subpackage appender
    *
    * @author evalcode.net
    */
@@ -56,10 +57,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::debug()
+     * @see \Components\Log_Appender::debug() \Components\Log_Appender::debug()
      */
     public function debug($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -67,8 +67,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::info()
+     * @see \Components\Log_Appender::info() \Components\Log_Appender::info()
      */
     public function info($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -76,8 +75,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::warn()
+     * @see \Components\Log_Appender::warn() \Components\Log_Appender::warn()
      */
     public function warn($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -85,8 +83,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::error()
+     * @see \Components\Log_Appender::error() \Components\Log_Appender::error()
      */
     public function error($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -94,8 +91,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::fatal()
+     * @see \Components\Log_Appender::fatal() \Components\Log_Appender::fatal()
      */
     public function fatal($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -103,8 +99,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Log_Appender::initialize()
+     * @see \Components\Log_Appender::initialize() \Components\Log_Appender::initialize()
      */
     public function initialize()
     {
@@ -112,8 +107,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -124,8 +118,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -133,8 +126,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {

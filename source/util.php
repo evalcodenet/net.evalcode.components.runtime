@@ -62,17 +62,17 @@
   }
 
   /**
-   * Start a profiling session.
+     * Start a profiling session.
    */
   function profile_begin()
   {
-    $GLOBALS['components_debug_profilers_current']=new Components\Debug_Profiler();
-    Components\Debug_Profiler::push($GLOBALS['components_debug_profilers_current']);
+    $GLOBALS['components_debug_profilers_current']=new \Components\Debug_Profiler();
+    \Components\Debug_Profiler::push($GLOBALS['components_debug_profilers_current']);
     array_push($GLOBALS['components_debug_profilers'], $GLOBALS['components_debug_profilers_current']);
   }
 
   /**
-   * Stop current profiling session.
+     * Stop current profiling session.
    *
    * @return \Components\Debug_Profiler
    *
@@ -84,7 +84,7 @@
       throw new Runtime_Exception('util', 'No profiling session started.');
 
     $profiler=$GLOBALS['components_debug_profilers_current']->result();
-    Components\Debug_Profiler::pop($profiler);
+    \Components\Debug_Profiler::pop($profiler);
 
     if(false===($GLOBALS['components_debug_profilers_current']=array_pop($GLOBALS['components_debug_profilers'])))
       $GLOBALS['components_debug_profilers_current']=null;
@@ -143,7 +143,7 @@
   }
 
   /**
-   * @param array|integer $integers_
+   * @param integer[] $integers_
    * @return integer
    */
   function integer_hash_a(array $integers_)
@@ -180,7 +180,7 @@
   }
 
   /**
-   * @param array|float $float_
+   * @param float[] $float_
    *
    * @return integer
    */

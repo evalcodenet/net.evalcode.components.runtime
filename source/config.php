@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Config
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -40,8 +40,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see \Components\Value_String::valueOf()
+     * @see \Components\Value_String::valueOf() \Components\Value_String::valueOf()
      *
      * @return \Components\Config
      */
@@ -70,10 +69,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see \Components\Value_String::value()
+     * @see \Components\Value_String::value() \Components\Value_String::value()
      */
     public function value()
     {

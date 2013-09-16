@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Log_Appender_Log4cxx_File
    *
+   * @api
    * @package net.evalcode.components
-   * @subpackage log.appender.log4cxx
+   * @subpackage appender.log4cxx
    *
    * @author evalcode.net
    */

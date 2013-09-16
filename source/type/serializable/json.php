@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Serializable_Json
    *
-   * @package net.evalcode.components
-   * @subpackage type.serializable
+   * @api
+   * @package net.evalcode.components.type
+   * @subpackage serializable
    *
    * @author evalcode.net
    */
@@ -19,11 +20,10 @@ namespace Components;
      * @return string
      */
     function serializeJson();
-
     /**
      * @param string $json_
      *
-     * @return Serializable_Json
+     * @return \Components\Serializable_Json
      */
     function unserializeJson($json_);
     //--------------------------------------------------------------------------

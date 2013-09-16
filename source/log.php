@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Log
    *
-   * @package net.evalcode.components
-   * @subpackage log
+   * @api
+   * @package net.evalcode.components.log
    *
    * @author evalcode.net
    */
@@ -155,7 +155,7 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|\Components\Log_Appender
+     * @var \Components\Log_Appender[]
      */
     private static $m_stack=array();
     /**

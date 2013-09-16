@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Cache_Backend
    *
-   * @package net.evalcode.components
-   * @subpackage runtime.cache
+   * @api
+   * @package net.evalcode.components.cache
    *
    * @author evalcode.net
    */
@@ -26,7 +26,6 @@ namespace Components;
      * @return boolean
      */
     function exists($key_);
-
     /**
      * Returns cached value for given key or 'null' if value can not
      * be found / has been expired.
@@ -36,7 +35,6 @@ namespace Components;
      * @return mixed|false
      */
     function get($key_);
-
     /**
      * Caches given value for given key. Optional $ttl_ can be passed
      * to define seconds until cached value expires.
@@ -51,7 +49,6 @@ namespace Components;
      * @return boolean
      */
     function set($key_, $value_, $ttl_=0);
-
     /**
      * Removes cached value for given key.
      *
@@ -63,7 +60,6 @@ namespace Components;
      * @return boolean
      */
     function remove($key_);
-
     /**
      * Dumps cache contents into file for given filename.
      *
@@ -74,7 +70,6 @@ namespace Components;
      * @return boolean
      */
     function dump($filename_);
-
     /**
      * Loads contents of file for given filename into cache.
      *
@@ -85,7 +80,6 @@ namespace Components;
      * @return boolean
      */
     function load($filename_);
-
     /**
      * Clears all cache contents created by current runtime instance.
      *

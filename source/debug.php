@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Debug
    *
-   * @package net.evalcode.components
-   * @subpackage debug
+   * @api
+   * @package net.evalcode.components.debug
    *
    * @author evalcode.net
    *

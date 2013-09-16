@@ -20,8 +20,8 @@ namespace Components;
   /**
    * Runtime
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -98,7 +98,7 @@ namespace Components;
     }
 
     /**
-     * @return array|string
+     * @return string[]
      */
     public static function getManagementIps()
     {
@@ -106,7 +106,7 @@ namespace Components;
     }
 
     /**
-     * @param array|string $managementIps_
+     * @param string[] $managementIps_
      */
     public static function setManagementIps(array $managementIps_)
     {
@@ -114,7 +114,7 @@ namespace Components;
     }
 
     /**
-     * @return array|Components\Runtime_Error_Handler
+     * @return \Components\Runtime_Error_Handler[]
      */
     public static function getRuntimeErrorHandlers()
     {
@@ -220,8 +220,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -229,8 +228,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -241,8 +239,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -258,11 +255,11 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|string
+     * @var string[]
      */
     private static $m_managementIps=array();
     /**
-     * @var array|Components\Runtime_Error_Handler
+     * @var \Components\Runtime_Error_Handler[]
      */
     private static $m_runtimeErrorHandlers=array();
     /**
@@ -270,11 +267,11 @@ namespace Components;
      */
     private static $m_cacheFile;
     /**
-     * @var Components\Runtime
+     * @var \Components\Runtime
      */
     private static $m_instance;
     /**
-     * @var Components\Version
+     * @var \Components\Version
      */
     private static $m_version;
     //--------------------------------------------------------------------------
@@ -284,8 +281,8 @@ namespace Components;
   /**
    * Runtime_Classloader
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -309,7 +306,7 @@ namespace Components;
     }
 
     /**
-     * @return array|Components\Classloader
+     * @return \Components\Classloader[]
      */
     public static function getClassloaders()
     {
@@ -389,8 +386,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::getClasspaths()
+     * @see \Components\Classloader::getClasspaths() \Components\Classloader::getClasspaths()
      */
     public function getClasspaths()
     {
@@ -413,8 +409,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::initialize()
+     * @see \Components\Classloader::initialize() \Components\Classloader::initialize()
      */
     public function initialize()
     {
@@ -451,8 +446,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::loadClass()
+     * @see \Components\Classloader::loadClass() \Components\Classloader::loadClass()
      */
     public function loadClass($clazz_)
     {
@@ -512,8 +506,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -521,8 +514,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -534,8 +526,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -546,7 +537,7 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|\Components\Classloader
+     * @var \Components\Classloader[]
      */
     private static $m_classloaders=array();
     /**
@@ -556,19 +547,19 @@ namespace Components;
     private static $m_count=0;
 
     /**
-     * @var array|string
+     * @var string[]
      */
     private $m_classpaths=array();
     /**
-     * @var array|string
+     * @var string[]
      */
     private $m_resourceTypeForName=array();
     /**
-     * @var array|string
+     * @var string[]
      */
     private $m_resourceNameForType=array();
     /**
-     * @var boolean
+     *  @var boolean
      */
     private $m_refresh=false;
     //--------------------------------------------------------------------------
@@ -578,8 +569,8 @@ namespace Components;
   /**
    * Runtime_Exception
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -648,7 +639,7 @@ namespace Components;
       return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
         <exception>%7$s
           <type>%1$s</type>%7$s
-          <code>%2$s</code>%7$s
+          <pre>%2$s</pre>%7$s
           <namespace>%3$s</namespace>%7$s
           <message>%4$s</message>%7$s
           <source>%5$s</source>%7$s
@@ -668,8 +659,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -677,8 +667,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -689,8 +678,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -712,8 +700,8 @@ namespace Components;
   /**
    * Runtime_ErrorException
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
@@ -779,7 +767,7 @@ namespace Components;
       return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
         <exception>%7$s
           <type>%1$s</type>%7$s
-          <code>%2$s</code>%7$s
+          <pre>%2$s</pre>%7$s
           <namespace>%3$s</namespace>%7$s
           <message>%4$s</message>%7$s
           <source>%5$s</source>%7$s
@@ -799,8 +787,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -808,8 +795,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -820,8 +806,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -843,8 +828,8 @@ namespace Components;
   /**
    * Runtime_Error_Handler
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */

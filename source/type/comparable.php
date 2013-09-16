@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Comparable
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -23,7 +23,7 @@ namespace Components;
      *
      * @return integer
      *
-     * @throws Runtime_Exception If unable to compare to given argument.
+     * @throws \Components\Runtime_Exception If unable to compare to given argument.
      */
     function compareTo($object_);
     //--------------------------------------------------------------------------

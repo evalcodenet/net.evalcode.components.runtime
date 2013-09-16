@@ -7,8 +7,9 @@ namespace Components;
   /**
    * Exception_Flat
    *
-   * @package net.evalcode.components
-   * @subpackage type.exception
+   * @api
+   * @package net.evalcode.components.type
+   * @subpackage exception
    *
    * @author evalcode.net
    */
@@ -19,7 +20,6 @@ namespace Components;
      * @var string Class name of represented exception.
      */
     public $type;
-
     /**
      * @var integer Code of represented exception.
      */
@@ -36,7 +36,6 @@ namespace Components;
      * @var boolean Indicates if represented exception is of type Error.
      */
     public $isErrorException=false;
-
     /**
      * @var string Source file where represented exception has been thrown.
      */

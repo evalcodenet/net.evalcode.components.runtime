@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Object
    *
-   * @package net.evalcode.components
-   * @subpackage type
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
@@ -29,7 +29,6 @@ namespace Components;
      * @return string
      */
     function hashCode();
-
     /**
      * Determines whether this object is equal to the passed one.
      *
@@ -45,7 +44,6 @@ namespace Components;
      * @return boolean
      */
     function equals($object_);
-
     /**
      * Returns a string representation of this object.
      *
@@ -53,9 +51,9 @@ namespace Components;
      *   Normally this would be a string in a standardized format representing
      *   the object's state for e.g. logging and debugging, similar to this:
      * </p>
-     * <code>
+     * <pre>
      *   return sprintf('%s@%s{member: %s}', __CLASS__, $this->hashCode(), $member);
-     * </code>
+     * </pre>
      *
      * <p>
      *   However there are cases where the preferred implementation differs.

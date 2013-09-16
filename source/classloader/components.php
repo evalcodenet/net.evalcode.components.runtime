@@ -11,8 +11,8 @@ namespace Components;
    *   Default classloader for components runtime.
    * </p>
    *
-   * @package net.evalcode.components
-   * @subpackage runtime.classloader
+   * @api
+   * @package net.evalcode.components.classloader
    *
    * @author evalcode.net
    */
@@ -26,10 +26,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES/IMPLEMENTS
+    // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Classloader::initialize()
+     * @see \Components\Classloader::initialize() \Components\Classloader::initialize()
      */
     public function initialize()
     {

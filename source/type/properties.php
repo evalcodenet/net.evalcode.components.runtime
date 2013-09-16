@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Properties
    *
-   * @package net.evalcode.components
-   * @subpackage runtime
+   * @api
+   * @package net.evalcode.components.type
    *
    * @author evalcode.net
    *
@@ -28,8 +28,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * (non-PHPdoc)
-     * @see Components\Collection::arrayValue()
+     * @see \Components\Collection::arrayValue() \Components\Collection::arrayValue()
      */
     public function arrayValue()
     {
@@ -37,8 +36,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Collection::isEmpty()
+     * @see \Components\Collection::isEmpty() \Components\Collection::isEmpty()
      */
     public function isEmpty()
     {
@@ -46,8 +44,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Collection_Mutable::isEmpty()
+     * @see \Components\Collection_Mutable::isEmpty() \Components\Collection_Mutable::isEmpty()
      *
      * @todo Add interface \Components\Collection_Mutable.
      */
@@ -57,8 +54,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Countable::count()
+     * @see \Components\Countable::count() \Components\Countable::count()
      */
     public function count()
     {
@@ -118,8 +114,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Cloneable::__clone()
+     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
      */
     public function __clone()
     {
@@ -128,8 +123,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Serializable_Json::serializeJson()
+     * @see \Components\Serializable_Json::serializeJson() \Components\Serializable_Json::serializeJson()
      */
     public function serializeJson()
     {
@@ -137,8 +131,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Serializable_Json::unserializeJson()
+     * @see \Components\Serializable_Json::unserializeJson() \Components\Serializable_Json::unserializeJson()
      *
      * @return Compoents\Properties
      */
@@ -150,8 +143,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Serializable_Php::__sleep()
+     * @see \Components\Serializable_Php::__sleep() \Components\Serializable_Php::__sleep()
      */
     public function __sleep()
     {
@@ -159,8 +151,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Serializable_Php::__wakeup()
+     * @see \Components\Serializable_Php::__wakeup() \Components\Serializable_Php::__wakeup()
      */
     public function __wakeup()
     {
@@ -168,8 +159,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Serializable::serialVersionUid()
+     * @see \Components\Serializable::serialVersionUid() \Components\Serializable::serialVersionUid()
      */
     public function serialVersionUid()
     {
@@ -177,8 +167,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::hashCode()
+     * @see \Components\Object::hashCode() \Components\Object::hashCode()
      */
     public function hashCode()
     {
@@ -186,8 +175,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::equals()
+     * @see \Components\Object::equals() \Components\Object::equals()
      */
     public function equals($object_)
     {
@@ -198,8 +186,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see Components\Object::__toString()
+     * @see \Components\Object::__toString() \Components\Object::__toString()
      */
     public function __toString()
     {
@@ -213,7 +200,7 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var array|mixed
+     * @var array
      */
     protected $m_properties=array();
     //--------------------------------------------------------------------------

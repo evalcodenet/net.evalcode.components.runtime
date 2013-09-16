@@ -7,8 +7,8 @@ namespace Components;
   /**
    * Log_Appender_Log4cxx_File_Rolling
    *
-   * @package net.evalcode.components
-   * @subpackage log.appender.log4cxx
+   * @package net.evalcode.components.log
+   * @subpackage appender.log4cxx
    *
    * @author evalcode.net
    */
