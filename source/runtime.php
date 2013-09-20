@@ -14,6 +14,7 @@ namespace Components;
   require_once __DIR__.'/cache/backend/apc.php';
   require_once __DIR__.'/cache/backend/local.php';
   require_once __DIR__.'/cache/backend/null.php';
+  require_once __DIR__.'/cache/backend/xcache.php';
   require_once __DIR__.'/cache.php';
 
 

@@ -20,15 +20,21 @@ namespace Components;
      */
     public static function create(Cache_Backend $backend_=null)
     {
-      if(Cache_Backend_Apc::isSupported())
+      if(Cache_Backend_Xcache::isSupported())
       {
-        self::$m_backend=new Cache_Backend_Apc();
+        self::$m_backend=new Cache_Backend_Xcache();
       }
       else
       {
         $storage=array();
+
         if(session_id())
+        {
+          if(false===isset($_SESSION[COMPONENTS_CACHE_NAMESPACE]))
+            $_SESSION[COMPONENTS_CACHE_NAMESPACE]=array();
+
           $storage=&$_SESSION[COMPONENTS_CACHE_NAMESPACE];
+        }
 
         self::$m_backend=new Cache_Backend_Local($storage);
       }

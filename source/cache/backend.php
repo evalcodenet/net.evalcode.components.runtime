@@ -27,7 +27,7 @@ namespace Components;
      */
     function exists($key_);
     /**
-     * Returns cached value for given key or 'null' if value can not
+     * Returns cached value for given key or 'false' if value can not
      * be found / has been expired.
      *
      * @param string $key_

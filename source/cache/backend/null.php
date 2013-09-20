@@ -53,7 +53,7 @@ namespace Components;
      */
     public function dump($filename_)
     {
-      return true;
+      return false;
     }
 
     /**
@@ -61,7 +61,7 @@ namespace Components;
      */
     public function load($filename_)
     {
-      return true;
+      return false;
     }
 
     /**
