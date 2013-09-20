@@ -7,7 +7,8 @@ namespace Components;
   /**
    * Cache_Backend_Apc
    *
-   * @api
+   * @deprecated
+   *
    * @package net.evalcode.components.cache
    * @subpackage backend
    *
@@ -20,7 +21,7 @@ namespace Components;
     {
       if(null===self::$m_isSupported)
       {
-        if(extension_loaded('apc') && (true===apc_exists('components/cache/backend/apc/supported') || false!==apc_store('components/cache/backend/apc/supported', true)))
+        if(extension_loaded('apc') && (true===@apc_exists('components/cache/backend/apc/supported') || false!==@apc_store('components/cache/backend/apc/supported', true)))
           return self::$m_isSupported=true;
 
         return self::$m_isSupported=false;

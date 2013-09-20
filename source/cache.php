@@ -24,6 +24,11 @@ namespace Components;
       {
         self::$m_backend=new Cache_Backend_Xcache();
       }
+      // TODO [CSH] Remove APC with PHP 5.5 / Switch to APCU.
+      else if(Cache_Backend_Apc::isSupported())
+      {
+        self::$m_backend=new Cache_Backend_Apc();
+      }
       else
       {
         $storage=array();
