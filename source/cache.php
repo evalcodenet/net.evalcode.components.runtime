@@ -20,12 +20,7 @@ namespace Components;
      */
     public static function create(Cache_Backend $backend_=null)
     {
-      if(Cache_Backend_Xcache::isSupported())
-      {
-        self::$m_backend=new Cache_Backend_Xcache();
-      }
-      // TODO [CSH] Remove APC with PHP 5.5 / Switch to APCU.
-      else if(Cache_Backend_Apc::isSupported())
+      if(Cache_Backend_Apc::isSupported())
       {
         self::$m_backend=new Cache_Backend_Apc();
       }

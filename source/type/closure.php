@@ -5,17 +5,17 @@ namespace Components;
 
 
   /**
-   * Callable
+   * Closure
    *
    * @api
    * @package net.evalcode.components.type
    *
    * @author evalcode.net
    */
-  interface Callable /* extends \Closure (\Callable with PHP 5.4) */
+  interface Closure
   {
     /**
-     * Invoke callable.
+     * Invoke closure.
      *
      * @return mixed
      */
