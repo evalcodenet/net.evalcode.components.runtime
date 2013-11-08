@@ -94,7 +94,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private $m_classpaths=array();
+    private $m_classpaths=[];
     private $m_namespace;
 
     protected $m_path;
@@ -122,15 +122,15 @@ namespace Components;
       $source=@file_get_contents($path_);
 
       if(false===$source)
-        return array();
+        return [];
 
-      $matches=array();
+      $matches=[];
       preg_match_all('/\n\s*(?:(?:abstract|final)+\s+)*(?:class|interface|trait)\s*(\w+)\s/', $source, $matches);
 
       if(isset($matches[1]))
         return $matches[1];
 
-      return array();
+      return [];
     }
     //--------------------------------------------------------------------------
   }

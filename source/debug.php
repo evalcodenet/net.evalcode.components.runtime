@@ -101,7 +101,7 @@ namespace Components;
       {
         if(0<count(self::$m_dump))
         {
-          $debug=array();
+          $debug=[];
 
           foreach(self::$m_dump as $dump)
           {
@@ -175,7 +175,7 @@ JS;
               {
                 $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 50px 0;font:normal 8pt/10pt mono;">';
 
-                $location=array();
+                $location=[];
                 if(isset($exception['file']))
                   $location[]=$exception['file'];
                 if(isset($exception['line']))
@@ -184,10 +184,10 @@ JS;
                 $html.='<h4 style="color:#000;background:#fff;font:bold 8pt/11pt mono;padding:0;margin:0;">['.implode('::', $location).']</h4>';
                 $html.='<h3 style="color:#000;background:#fff;font:bold 15pt/25pt mono;padding:0;margin:0;">'.$exception['message'].'</h3>';
 
-                $stack=array();
+                $stack=[];
                 foreach($exception['trace'] as $stackTraceElement)
                 {
-                  $method=array();
+                  $method=[];
                   if(isset($stackTraceElement['class']))
                     $method[]=$stackTraceElement['class'];
                   if(isset($stackTraceElement['function']))
@@ -228,7 +228,7 @@ JS;
       {
         if(0<count(self::$m_dump))
         {
-          $header=array();
+          $header=[];
           foreach(self::$m_dump as $dump)
           {
             $source=$dump[0];
@@ -261,13 +261,13 @@ JS;
     {
       $exception=$exception_;
 
-      $path=array();
+      $path=[];
       while($exception)
       {
-        $trace=array();
+        $trace=[];
         foreach($exception->getTrace() as $element)
         {
-          $traceElement=array();
+          $traceElement=[];
           if(isset($element['file']))
             $traceElement['file']=$element['file'];
           if(isset($element['line']))
@@ -300,7 +300,7 @@ JS;
 
       if(0<count(self::$m_dump))
       {
-        $debug=array();
+        $debug=[];
         foreach(self::$m_dump as $dump)
         {
           $source=$dump[0];
@@ -349,7 +349,7 @@ JS;
             {
               $html.='<pre style="display:block;color:#000;background:#fff;margin:10px 0 0;font:normal 8pt/10pt mono;">';
 
-              $location=array();
+              $location=[];
               if(isset($exception['file']))
                 $location[]=$exception['file'];
               if(isset($exception['line']))
@@ -358,10 +358,10 @@ JS;
               $html.='<h4 style="color:#000;background:#fff;font:bold 8pt/11pt mono;padding:0;margin:0;">['.implode('::', $location).']</h4>';
               $html.='<h3 style="color:#000;background:#fff;font:bold 15pt/25pt mono;padding:0;margin:0;">'.$exception['message'].'</h3>';
 
-              $stack=array();
+              $stack=[];
               foreach($exception['trace'] as $stackTraceElement)
               {
-                $method=array();
+                $method=[];
                 if(isset($stackTraceElement['class']))
                   $method[]=$stackTraceElement['class'];
                 if(isset($stackTraceElement['function']))
@@ -496,8 +496,8 @@ JS;
 
     public static function clear()
     {
-      self::$m_dump=array();
-      self::$m_exceptions=array();
+      self::$m_dump=[];
+      self::$m_exceptions=[];
     }
     //--------------------------------------------------------------------------
 
@@ -509,10 +509,10 @@ JS;
       'application/xml'=>'fetchXml'
     );
 
-    private static $m_flags=array();
-    private static $m_listeners=array();
-    private static $m_dump=array();
-    private static $m_exceptions=array();
+    private static $m_flags=[];
+    private static $m_listeners=[];
+    private static $m_dump=[];
+    private static $m_exceptions=[];
     private static $m_active=false;
     private static $m_verbosity=1;
     //-----
@@ -521,7 +521,7 @@ JS;
     // HELPERS
     private static function appendArray($array_, $level_=0)
     {
-      $dump=array();
+      $dump=[];
       foreach($array_ as $key=>$value)
       {
         $dump[]=array(
@@ -534,11 +534,11 @@ JS;
       return $dump;
     }
 
-    private static function appendObject($object_, $level_=0, array &$dump_=array())
+    private static function appendObject($object_, $level_=0, array &$dump_=[])
     {
       $obj=new \ReflectionObject($object_);
 
-      $dump=array();
+      $dump=[];
       if(1<self::$m_verbosity)
         $dump['id']=object_hash($object_);
       $dump=array_merge($dump, self::appendType(get_class($object_)));
@@ -580,11 +580,11 @@ JS;
 
     private static function appendExtension(\ReflectionExtension $extension_)
     {
-      $ini=array();
+      $ini=[];
       foreach($extension_->getINIEntries() as $name=>$value)
         $ini[$name]=$value;
 
-      $dependencies=array();
+      $dependencies=[];
       foreach($extension_->getDependencies() as $dependency)
         $dependencies[]=$dependency;
 
@@ -621,6 +621,11 @@ JS;
       $source=$source[1];
       $source['args']=0;
 
+      /**
+       * TODO [CSH] Append headers instantly if enabled.
+       *
+       * Debug output is lost if an unhandled exception or fatal error occurs.
+       */
       self::$m_dump[]=array($source, $args_);
     }
     //--------------------------------------------------------------------------

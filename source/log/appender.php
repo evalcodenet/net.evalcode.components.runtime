@@ -57,7 +57,7 @@ namespace Components;
      *
      * @internal
      */
-    function append($level_, array $args_=array());
+    function append($level_, array $args_=[]);
 
     /**
      * Internal initialization.

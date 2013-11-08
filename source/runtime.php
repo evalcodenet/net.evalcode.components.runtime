@@ -264,7 +264,7 @@ namespace Components;
     /**
      * @var \Components\Runtime_Error_Handler[]
      */
-    private static $m_runtimeErrorHandlers=array();
+    private static $m_runtimeErrorHandlers=[];
     /**
      * @var string
      */
@@ -424,10 +424,10 @@ namespace Components;
           \RecursiveRegexIterator::MATCH
         );
 
-        $this->m_classpaths=array();
+        $this->m_classpaths=[];
         foreach($iterator as $entry)
         {
-          $matches=array();
+          $matches=[];
           preg_match_all('/\n\s*(?:(?:abstract|final)+\s+)*(?:class|interface|trait)\s*(\w+)\s/',
             file_get_contents($entry->getPathname()), $matches
           );
@@ -542,7 +542,7 @@ namespace Components;
     /**
      * @var \Components\Classloader[]
      */
-    private static $m_classloaders=array();
+    private static $m_classloaders=[];
     /**
      * @var \Components\Runtime_Classloader
      */
@@ -552,15 +552,15 @@ namespace Components;
     /**
      * @var string[]
      */
-    private $m_classpaths=array();
+    private $m_classpaths=[];
     /**
      * @var string[]
      */
-    private $m_resourceTypeForName=array();
+    private $m_resourceTypeForName=[];
     /**
      * @var string[]
      */
-    private $m_resourceNameForType=array();
+    private $m_resourceNameForType=[];
     /**
      *  @var boolean
      */

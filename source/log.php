@@ -157,7 +157,7 @@ namespace Components;
     /**
      * @var \Components\Log_Appender[]
      */
-    private static $m_stack=array();
+    private static $m_stack=[];
     /**
      * @var integer
      */

@@ -81,7 +81,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private static $m_instances=array();
+    private static $m_instances=[];
 
     private $m_loaded=false;
     private $m_component;

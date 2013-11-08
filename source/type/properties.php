@@ -19,7 +19,7 @@ namespace Components;
     Serializable_Php, Serializable_Json
   {
     // CONSTRUCTION
-    public function __construct(array $properties_=array())
+    public function __construct(array $properties_=[])
     {
       $this->m_properties=$properties_;
     }
@@ -50,7 +50,7 @@ namespace Components;
      */
     public function clear()
     {
-      $this->m_properties=array();
+      $this->m_properties=[];
     }
 
     /**
@@ -89,7 +89,7 @@ namespace Components;
       return $this;
     }
 
-    public function __call($name_, array $args_=array())
+    public function __call($name_, array $args_=[])
     {
       if(0===count($args_))
       {
@@ -202,7 +202,7 @@ namespace Components;
     /**
      * @var array
      */
-    protected $m_properties=array();
+    protected $m_properties=[];
     //--------------------------------------------------------------------------
   }
 ?>

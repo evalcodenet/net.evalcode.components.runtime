@@ -33,7 +33,7 @@ namespace Components;
      *
      * @throws \Components\Runtime_Exception
      */
-    public static function __callStatic($name_, array $args_=array())
+    public static function __callStatic($name_, array $args_=[])
     {
       $type=get_called_class();
 
@@ -337,11 +337,11 @@ namespace Components;
     /**
      * @var array
      */
-    private static $m_enums=array();
+    private static $m_enums=[];
     /**
      * @var \Components\Enumeration[]
      */
-    private static $m_enumInstances=array();
+    private static $m_enumInstances=[];
 
     protected $m_name;
     protected $m_key;
@@ -354,7 +354,7 @@ namespace Components;
       if(false===self::$m_initialized)
       {
         if(false===(self::$m_enums=Cache::get('components/type/enumeration')))
-          self::$m_enums=array();
+          self::$m_enums=[];
 
         self::$m_initialized=true;
       }

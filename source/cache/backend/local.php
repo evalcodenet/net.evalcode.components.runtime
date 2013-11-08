@@ -16,7 +16,7 @@ namespace Components;
   class Cache_Backend_Local implements Cache_Backend
   {
     // CONSTRUCTION
-    public function __construct(array &$cache_=array())
+    public function __construct(array &$cache_=[])
     {
       $this->m_cache=&$cache_;
     }
@@ -111,7 +111,7 @@ namespace Components;
     {
       if(null===$prefix_)
       {
-        $this->m_cache=array();
+        $this->m_cache=[];
       }
       else
       {
@@ -129,7 +129,7 @@ namespace Components;
     /**
      * @var array
      */
-    private $m_cache=array();
+    private $m_cache=[];
     //--------------------------------------------------------------------------
   }
 ?>

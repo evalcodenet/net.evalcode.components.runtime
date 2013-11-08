@@ -81,7 +81,7 @@ namespace Components;
     public function dump($filename_)
     {
       // FIXME Produces segfault on load if parameters are set to null / everything is dumped.
-      return apc_bin_dumpfile(array(), array(), $filename_);
+      return apc_bin_dumpfile([], [], $filename_);
     }
 
     /**
@@ -97,6 +97,10 @@ namespace Components;
      */
     public function clear($prefix_=null)
     {
+      // TODO [CSH] apc_delete, apc_delete_file is not yet fully implemented by APCu.
+      if(extension_loaded('apcu'))
+        return apc_clear_cache('user');
+
       if(null===$prefix_)
       {
         apc_delete(new \APCIterator('user', '/'.COMPONENTS_CACHE_NAMESPACE.'/'));

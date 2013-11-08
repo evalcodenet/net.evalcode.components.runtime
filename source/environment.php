@@ -578,7 +578,7 @@ namespace Components;
     /**
      * @var \Components\Environment[]
      */
-    private static $m_stack=array();
+    private static $m_stack=[];
     /**
      * @var boolean
      */

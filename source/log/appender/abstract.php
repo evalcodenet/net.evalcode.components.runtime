@@ -177,7 +177,7 @@ namespace Components;
      *
      * @return string
      */
-    protected function format($level_, array $args_=array())
+    protected function format($level_, array $args_=[])
     {
       $time=microtime(true);
       $time=array(substr($time, 0, COMPONENTS_TIMESTAMP_SIZE),

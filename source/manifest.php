@@ -112,7 +112,7 @@ namespace Components;
      */
     public function getDependencies()
     {
-      $dependencies=array();
+      $dependencies=[];
       foreach($this->initialized()->dependencies as $name)
       {
         if(false===isset(self::$m_instances[$name]))
@@ -199,11 +199,11 @@ namespace Components;
     /**
      * @var \Components\Manifest[]
      */
-    private static $m_instances=array();
+    private static $m_instances=[];
     /**
      * @var \Components\Version[]
      */
-    private static $m_versions=array();
+    private static $m_versions=[];
     /**
      * @var string
      */

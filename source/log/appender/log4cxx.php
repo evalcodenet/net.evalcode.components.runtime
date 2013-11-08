@@ -32,7 +32,7 @@ namespace Components;
     /**
      * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
      */
-    public function append($level_, array $args_=array())
+    public function append($level_, array $args_=[])
     {
       $this->m_logger->{self::$m_mapLevelToName[$level_]}(
         '['.array_shift($args_).'] '.array_shift($args_), $args_

@@ -17,7 +17,7 @@
 
   define('COMPONENTS_TIMESTAMP_SIZE', strlen(time()));
 
-  $GLOBALS['components_debug_profilers']=array();
+  $GLOBALS['components_debug_profilers']=[];
   $GLOBALS['components_debug_profilers_current']=null;
 
 
@@ -103,7 +103,7 @@
   {
     $profiler=profile_end();
 
-    $entries=array();
+    $entries=[];
     $total=0;
     foreach($profiler->splitTimeTable() as $entry)
     {
@@ -202,9 +202,19 @@
   {
     return (int)str_replace(
       array('a', 'b', 'c', 'd', 'e', 'f'),
-      array('11', '12', '13', '14', '15', '16'),
+      array('1', '2', '3', '4', '5', '6'),
       spl_object_hash($object_)
     );
+  }
+
+  /**
+   * @param mixed $object_
+   *
+   * @return string
+   */
+  function object_hash_md5($object_)
+  {
+    return md5(spl_object_hash($object_));
   }
 
   /**

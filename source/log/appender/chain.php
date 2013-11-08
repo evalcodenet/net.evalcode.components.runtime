@@ -39,7 +39,7 @@ namespace Components;
     /**
      * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
      */
-    public function append($level_, array $args_=array())
+    public function append($level_, array $args_=[])
     {
       foreach($this->m_appenders as $appender)
         $appender->append($level_, $args_);
@@ -48,7 +48,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private $m_appenders=array();
+    private $m_appenders=[];
     //--------------------------------------------------------------------------
   }
 ?>

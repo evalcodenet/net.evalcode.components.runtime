@@ -248,7 +248,7 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    private static $m_segments=array();
+    private static $m_segments=[];
     private static $m_isSupported;
 
     private $m_segmentId=false;

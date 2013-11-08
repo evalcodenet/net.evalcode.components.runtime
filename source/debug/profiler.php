@@ -36,7 +36,7 @@ namespace Components;
     /**
      * @return \Components\Debug_Profiler
      */
-    public static function profileCall(array $callable_, array $args_=array())
+    public static function profileCall(array $callable_, array $args_=[])
     {
       if(false===is_callable($callable_))
         throw new Runtime_Exception('debug/profiler', 'Valid callback expected.');
@@ -73,7 +73,7 @@ namespace Components;
      *
      * @return \Components\Debug_Profiler
      */
-    public static function profileCallForked(array $callable_, array $args_=array())
+    public static function profileCallForked(array $callable_, array $args_=[])
     {
       if(false===static::isForkedProfilingSupported() || false===Memory_Shared_Shm::isSupported())
       {
@@ -451,11 +451,11 @@ namespace Components;
     protected static $m_profileForkedCallable;
     protected static $m_profileForkedSegmentId;
 
-    private static $m_instances=array();
+    private static $m_instances=[];
     private static $m_isForkedProfilingSupported;
     private static $m_isPosixSupported;
 
-    protected $m_splitTimeTable=array();
+    protected $m_splitTimeTable=[];
     protected $m_profiling=true;
     protected $m_lastSplitTimeEntry=0;
     protected $m_memoryConsumptionAfter=0;

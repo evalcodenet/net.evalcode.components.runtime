@@ -29,7 +29,7 @@ namespace Components;
     /**
      * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
      */
-    public function append($level_, array $args_=array())
+    public function append($level_, array $args_=[])
     {
       @file_put_contents(
         $this->m_file,
