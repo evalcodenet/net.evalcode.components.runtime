@@ -56,7 +56,7 @@
   function profile($description_)
   {
     if(null===$GLOBALS['components_debug_profilers_current'])
-      throw new Runtime_Exception('components/runtime/util', 'No profiling session started.');
+      throw new \Components\Runtime_Exception('components/runtime/util', 'No profiling session started.');
 
     $GLOBALS['components_debug_profilers_current']->splitTime($description_);
   }
@@ -81,7 +81,7 @@
   function profile_end()
   {
     if(null===$GLOBALS['components_debug_profilers_current'])
-      throw new Runtime_Exception('components/runtime/util', 'No profiling session started.');
+      throw new \Components\Runtime_Exception('components/runtime/util', 'No profiling session started.');
 
     $profiler=$GLOBALS['components_debug_profilers_current']->result();
     \Components\Debug_Profiler::pop($profiler);
@@ -421,7 +421,7 @@
     {
       header('HTTP/1.1 500 Internal Server Error', true, 500);
 
-      $hash=exception_log_hash($e_);
+      $hash=object_hash_md5($e_);
       header("Components-Exception: $hash");
       if(\Components\Runtime::isManagementAccess())
         header("$hash: ".exception_as_json($e_));
@@ -432,14 +432,17 @@
   {
     if($e_ instanceof \Components\Runtime_Exception
       || $e_ instanceof \Components\Runtime_ErrorException)
+    {
       $e_->log();
+    }
     else
-      \Components\Log::error(strtolower(strtr(get_class($e_), '\\_', '//')), '[%s] %s', exception_log_hash($e_), $e_);
-  }
+    {
+      $type=get_class($e_);
 
-  function exception_log_hash(\Exception $exception_)
-  {
-    return md5(object_hash($exception_));
+      \Components\Log::error(strtolower(strtr($type, '\\_', '//')), '[%s] %s%s',
+        object_hash_md5($e_), $type, $e_
+      );
+    }
   }
 
 

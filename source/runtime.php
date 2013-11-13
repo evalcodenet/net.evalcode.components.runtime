@@ -194,13 +194,13 @@ namespace Components;
         'components/runtime', $message_, $type_, $filename_, $line_
       );
 
-      exception_log($error);
-
       foreach(self::$m_runtimeErrorHandlers as $errorHandler)
       {
         if(true===$errorHandler->onError($error))
           return;
       }
+
+      exception_log($error);
     }
 
     public function onExit()
@@ -603,7 +603,7 @@ namespace Components;
     public function log()
     {
       if($this->m_logEnabled)
-        Log::error($this->m_namespace, '[%s] %s', md5($this->hashCode()), $this);
+        Log::error($this->m_namespace, '[%s] %s%s', md5($this->hashCode()), get_class($this), $this);
     }
 
     /**
@@ -685,8 +685,15 @@ namespace Components;
      */
     public function __toString()
     {
-      return sprintf("%s\n\n%s\n",
+      if(!$file=$this->getFile())
+        $file='internal';
+      if(!$line=$this->getLine())
+        $line=0;
+
+      return sprintf("\n\n#0 %s\n#0 %s(%d)\n#0\n%s\n",
         $this->message,
+        $file,
+        $line,
         $this->getTraceAsString()
       );
     }
@@ -731,7 +738,7 @@ namespace Components;
     public function log()
     {
       if($this->m_logEnabled)
-        Log::error($this->m_namespace, '[%s] %s', md5($this->hashCode()), $this);
+        Log::error($this->m_namespace, '[%s] %s%s', md5($this->hashCode()), get_class($this), $this);
     }
 
     /**
@@ -813,8 +820,15 @@ namespace Components;
      */
     public function __toString()
     {
-      return sprintf("%s\n\n%s\n",
+      if(!$file=$this->getFile())
+        $file='internal';
+      if(!$line=$this->getLine())
+        $line=0;
+
+      return sprintf("\n\n#0 %s\n#0 %s(%d)\n#0\n%s\n",
         $this->message,
+        $file,
+        $line,
         $this->getTraceAsString()
       );
     }
