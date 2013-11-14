@@ -41,7 +41,7 @@ namespace Components;
         set_error_handler(array(self::$m_instance, 'onErrorException'), error_reporting());
         set_exception_handler(array(self::$m_instance, 'onException'));
 
-        self::$m_cacheFile=sys_get_temp_dir().DIRECTORY_SEPARATOR.COMPONENTS_INSTANCE_NAMESPACE.'-'.COMPONENTS_CACHE_NAMESPACE.'.cache';
+        self::$m_cacheFile=sys_get_temp_dir().DIRECTORY_SEPARATOR.COMPONENTS_CACHE_NAMESPACE.'.cache';
         register_shutdown_function(array(self::$m_instance, 'onExit'));
 
         if('cli'===PHP_SAPI)
@@ -214,8 +214,7 @@ namespace Components;
         );
       }
 
-      // TODO (CSH) What if is_file or Cache::dump throws an exception here?
-      if(false===is_file(self::$m_cacheFile))
+      if('cli'===PHP_SAPI && false===@is_file(self::$m_cacheFile))
         Cache::dump(self::$m_cacheFile);
     }
     //--------------------------------------------------------------------------
