@@ -327,10 +327,10 @@ namespace Components;
      */
     public static function includeConfig($file_)
     {
-      include_once self::$m_current->m_pathConfig."/$file_";
+      @include_once self::$m_current->m_pathConfig."/$file_";
 
       if(is_file($file=(self::$m_current->m_pathConfig.'/'.self::$m_current->m_name."/$file_")))
-        include_once $file;
+        @include_once $file;
     }
 
     /**
