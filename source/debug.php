@@ -112,7 +112,7 @@ namespace Components;
       if(null!==$appender_)
         self::$m_appender[$verbosity_]=$appender_;
 
-      if(self::$m_active && self::$m_verbosity>=$verbosity_)
+      if(self::$m_active && self::$m_verbosity>=$verbosity_ && Runtime::isManagementAccess())
       {
         while(self::INFO>=$verbosity_)
         {
@@ -127,22 +127,6 @@ namespace Components;
         self::$m_appenderNull=new Debug_Appender_Null();
 
       return self::$m_appenderNull;
-    }
-
-    /**
-     * @param string $type_
-     *
-     * @return \Components\Debug_Appender
-     */
-    public static function appenderForType(Type $type_)
-    {
-      foreach(self::$m_appender as $appender)
-      {
-        if($type_->isTypeOf($appender))
-          return $appender;
-      }
-
-      return null;
     }
 
     /**
@@ -228,6 +212,14 @@ namespace Components;
       foreach(self::$m_appender as $appender)
         $appender->clear();
     }
+
+    /**
+     * @return string[]
+     */
+    public static function severities()
+    {
+      return self::$m_severities;
+    }
     //--------------------------------------------------------------------------
 
 
@@ -240,6 +232,14 @@ namespace Components;
      * @var integer
      */
     private static $m_verbosity=self::INFO;
+    /**
+     * @var string[]
+     */
+    private static $m_severities=[
+      self::ERROR=>'ERROR',
+      self::WARN=>'WARN',
+      self::INFO=>'INFO'
+    ];
     /**
      * @var \Closure[]
      */

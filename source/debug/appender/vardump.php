@@ -20,20 +20,36 @@ namespace Components;
      */
     public function append($severity_, array $args_)
     {
-      if(Runtime::isManagementAccess())
+      echo '<pre style="text-align:left;background:white;color:black;">';
+
+      foreach($args_ as $arg)
       {
-        echo '<pre style="text-align:left;background:white;color:black;">';
-
-        foreach($args_ as $arg)
-        {
-          if($arg instanceof \Exception)
-            exception_print_html($arg, true, true);
-          else
-            var_dump($arg, true);
-        }
-
-        echo '</pre>';
+        if($arg instanceof \Exception)
+          exception_print_html($arg, true, true);
+        else
+          print_r($arg);
       }
+
+      echo '</pre>';
+    }
+
+    /**
+     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     */
+    public function appendGroup($severity_, $message_, array $lines_)
+    {
+      $severities=Debug::severities();
+
+      echo '<pre style="text-align:left;background:white;color:black;">';
+      echo "[$severities[$severity_]] $message_\n";
+
+      foreach($lines_ as $severity=>$messages)
+      {
+        foreach($messages as $message)
+          echo "[$severities[$severity]] $message\n";
+      }
+
+      echo '</pre>';
     }
 
     /**

@@ -26,6 +26,26 @@ namespace Components;
     }
 
     /**
+     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     */
+    public function appendGroup($severity_, $message_, array $lines_)
+    {
+      Log::current()->append(
+        self::$m_severity[$severity_], array('debug', $message_)
+      );
+
+      foreach($lines_ as $severity=>$messages)
+      {
+        foreach($messages as $message)
+        {
+          Log::current()->append(
+            self::$m_severity[$severity], array('debug', $message)
+          );
+        }
+      }
+    }
+
+    /**
      * @see \Components\Debug_Appender::flush() flush
      */
     public function flush()

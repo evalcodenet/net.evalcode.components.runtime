@@ -241,7 +241,20 @@ namespace Components;
         );
       }
 
-      if(Debug::active() && (self::isManagementAccess() || Environment::isDev()))
+      if(self::$m_isCli)
+      {
+        $hasErrors=0<count(self::$m_exceptions);
+
+        foreach(self::$m_exceptions as $exception)
+          exception_print_cli($exception, true, true);
+
+        if(false===@is_file(self::$m_cacheFile))
+          Cache::dump(self::$m_cacheFile);
+
+        exit(false===$hasErrors?0:-1);
+      }
+
+      if(Debug::active() && (self::$m_isManagementAccess || Environment::isDev()))
       {
         Debug::verror(self::$m_exceptions);
         Debug::flush();
@@ -252,19 +265,8 @@ namespace Components;
       if(false===Environment::isDev())
         self::$m_exceptions=[];
 
-      if(self::$m_isCli)
-      {
-        foreach(self::$m_exceptions as $exception)
-          exception_print_cli($exception, true, true);
-
-        if(false===@is_file(self::$m_cacheFile))
-          Cache::dump(self::$m_cacheFile);
-      }
-      else
-      {
-        foreach(self::$m_exceptions as $exception)
-          exception_print_html($exception, true, true);
-      }
+      foreach(self::$m_exceptions as $exception)
+        exception_print_html($exception, true, true);
     }
     //--------------------------------------------------------------------------
 
@@ -306,7 +308,8 @@ namespace Components;
           if(false===headers_sent())
           {
             header('HTTP/1.1 500 Internal Server Error', true, 500);
-            if(self::isManagementAccess())
+
+            if(self::$m_isManagementAccess)
               header('Components-Exception-0: Out of memory.');
           }
         }

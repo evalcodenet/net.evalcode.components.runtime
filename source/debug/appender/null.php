@@ -13,13 +13,21 @@ namespace Components;
    *
    * @author evalcode.net
    */
-  class Debug_Appender_Null implements Debug_Appender
+  class Debug_Appender_Null extends Debug_Appender_Abstract
   {
     // OVERRIDES/IMPLEMENTS
     /**
      * @see \Components\Debug_Appender::append() append
      */
     public function append($severity_, array $args_)
+    {
+      // Do nothing ...
+    }
+
+    /**
+     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     */
+    public function appendGroup($severity_, $message_, array $lines_)
     {
       // Do nothing ...
     }

@@ -51,24 +51,24 @@ namespace Components;
             $line_=$source['line'];
         }
 
-        if(Runtime::isManagementAccess())
-        {
-          $header=[];
-          foreach($args as $arg)
-            $header[$severity_][]=[$file_, $line_, $args];
+        $header=[];
+        foreach($args as $arg)
+          $header[$severity_][]=[$file_, $line_, $args];
 
-          if(count($header))
-          {
-            header('Components-Debug-'.self::$m_debugIdx.':'.json_encode($header));
-            self::$m_debugIdx++;
-          }
+        if(count($header))
+        {
+          header('Components-Debug-'.self::$m_debugIdx.':'.json_encode($header));
+
+          self::$m_debugIdx++;
         }
 
         self::$m_debug[$severity_][]=[$file_, $line_, $args];
       }
     }
 
-    // FIXME Refactor debug/appender#append() accordingly.
+    /**
+     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     */
     public function appendGroup($severity_, $message_, array $lines_)
     {
       self::$m_groups[$severity_][]=[$message_, $lines_];
