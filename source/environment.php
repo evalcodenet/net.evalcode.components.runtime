@@ -293,7 +293,7 @@ namespace Components;
       if(0===func_num_args())
         return self::$m_current->m_uriComponents;
 
-      return self::$m_current->m_uriComponents.'/'.ltrim(implode('/', func_get_args()), '/');
+      return rtrim(self::$m_current->m_uriComponents, '/').'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -306,7 +306,7 @@ namespace Components;
       if(0===func_num_args())
         return self::$m_current->m_uriComponentsEmbedded;
 
-      return self::$m_current->m_uriComponentsEmbedded.'/'.ltrim(implode('/', func_get_args()), '/');
+      return rtrim(self::$m_current->m_uriComponentsEmbedded, '/').'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -319,7 +319,7 @@ namespace Components;
       if(0===func_num_args())
         return self::$m_current->m_uriResource;
 
-      return self::$m_current->m_uriResource.'/'.ltrim(implode('/', func_get_args()), '/');
+      return rtrim(self::$m_current->m_uriResource, '/').'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -327,8 +327,8 @@ namespace Components;
      */
     public static function includeConfig($file_)
     {
-      if(false===@include_once(self::$m_current->m_pathConfig."/$file_"))
-        Log::warn('runtime/environment', 'Unable to resolve configuration file [name: %s].', $file_);
+      if(is_file($file=(self::$m_current->m_pathConfig."/$file_")))
+        @include_once $file;
 
       if(is_file($file=(self::$m_current->m_pathConfig.'/'.self::$m_current->m_name."/$file_")))
         @include_once $file;
