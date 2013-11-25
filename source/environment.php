@@ -327,7 +327,8 @@ namespace Components;
      */
     public static function includeConfig($file_)
     {
-      @include_once self::$m_current->m_pathConfig."/$file_";
+      if(false===@include_once self::$m_current->m_pathConfig."/$file_")
+        Log::warn('runtime/environment', 'Unable to resolve configuration file [name: %s].', $file_);
 
       if(is_file($file=(self::$m_current->m_pathConfig.'/'.self::$m_current->m_name."/$file_")))
         @include_once $file;
