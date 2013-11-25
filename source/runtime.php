@@ -57,7 +57,7 @@ namespace Components;
 
         Environment::includeConfig('runtime.php');
 
-        self::$m_isManagementAccess=self::$m_isCli || isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps);
+        self::$m_isManagementAccess=self::$m_isCli || (isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps));
       }
 
       return self::$m_instance;
@@ -249,11 +249,8 @@ namespace Components;
         self::$m_exceptions=[];
       }
 
-      if(Environment::isLive())
+      if(false===Environment::isDev())
         self::$m_exceptions=[];
-
-      foreach(self::$m_exceptions as $exception)
-        exception_print_html($exception, true, true);
 
       if(self::$m_isCli)
       {
@@ -262,6 +259,11 @@ namespace Components;
 
         if(false===@is_file(self::$m_cacheFile))
           Cache::dump(self::$m_cacheFile);
+      }
+      else
+      {
+        foreach(self::$m_exceptions as $exception)
+          exception_print_html($exception, true, true);
       }
     }
     //--------------------------------------------------------------------------

@@ -64,7 +64,7 @@ namespace Components;
           }
         }
 
-        self::$m_debug[$severity_][]=[$file, $line, $args];
+        self::$m_debug[$severity_][]=[$file_, $line_, $args];
       }
     }
 
@@ -110,7 +110,7 @@ namespace Components;
 
             function printDump(method_, style_, file_, line_, args_)
             {
-              console.groupCollapsed("%c %s:%s", style_, file_, line_);
+              console.groupCollapsed("%c%s:%s", style_, file_, line_);
 
               for(var i=0; i<args_.length; i++)
                 console[method_]("%O", args_[i]);
