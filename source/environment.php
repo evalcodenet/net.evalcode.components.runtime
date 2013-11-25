@@ -568,13 +568,13 @@ namespace Components;
     /**
      * @var string[]
      */
-    private static $m_names=array(
+    private static $m_names=[
       self::ALPHA=>'alpha',
       self::BETA=>'beta',
       self::DEV=>'dev',
       self::GAMMA=>'gamma',
       self::LIVE=>'live'
-    );
+    ];
     /**
      * @var \Components\Environment[]
      */

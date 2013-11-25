@@ -24,21 +24,24 @@ namespace Components;
 
     // STATIC ACCESSORS
     /**
-     * @param mixed $object_
+     * @param mixed $arg_
      *
      * @return \Components\Ns
      */
-    public static function of($object_)
+    public static function of($arg_)
     {
-      if(is_object($object_))
-        return new self(get_class($object_));
+      if(is_object($arg_))
+        return new self(get_class($arg_));
 
-      return new self(gettype($object_));
+      return new self(gettype($arg_));
     }
     //--------------------------------------------------------------------------
 
 
     // ACCESSORS
+    /**
+     * @return string
+     */
     public function name()
     {
       if(null===$this->m_name)
@@ -51,7 +54,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
@@ -59,7 +62,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -70,7 +73,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {

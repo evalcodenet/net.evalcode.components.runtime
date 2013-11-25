@@ -43,12 +43,10 @@ namespace Components;
      */
     public function loadClass($clazz_)
     {
-      if(false===isset($this->m_classpaths[$clazz_]))
-        return false;
+      if(@include_once $this->m_classpaths[$clazz_])
+        return true;
 
-      require_once $this->m_classpaths[$clazz_];
-
-      return true;
+      return false;
     }
 
     /**

@@ -51,8 +51,8 @@ namespace Components;
           return $instance;
       }
 
-      throw new Runtime_Exception('log', sprintf(
-        'No instance found for given name [name: %1$s]', $name_
+      throw new Runtime_Exception('components/log', sprintf(
+        'No instance found for given name [name: %1$s].', $name_
       ));
     }
 
