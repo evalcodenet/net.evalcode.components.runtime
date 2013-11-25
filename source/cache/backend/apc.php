@@ -97,10 +97,6 @@ namespace Components;
      */
     public function clear($prefix_=null)
     {
-      // TODO [CSH] apc_delete, apc_delete_file is not yet fully implemented by APCu.
-      if(extension_loaded('apcu'))
-        return apc_clear_cache('user');
-
       if(null===$prefix_)
       {
         apc_delete(new \APCIterator('user', '/'.COMPONENTS_CACHE_NAMESPACE.'/'));
@@ -112,7 +108,7 @@ namespace Components;
       }
       else
       {
-        apc_delete(new \APCIterator('user', '/'.COMPONENTS_CACHE_NAMESPACE."\/$prefix_/"));
+        apc_delete(new \APCIterator('user', "/^$prefix_*/", APC_ITER_KEY));
       }
     }
     //--------------------------------------------------------------------------

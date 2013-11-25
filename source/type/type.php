@@ -45,31 +45,52 @@ namespace Components;
     {
       return new self($name_);
     }
+
+    /**
+     * @param mixed $object_
+     * @param string $type_
+     *
+     * @return boolean
+     */
+    public static function isInstanceOf($object_, $type_)
+    {
+      return $object_ instanceof $type_;
+    }
     //--------------------------------------------------------------------------
 
 
     // ACCESSORS
     /**
-     * @return Ns
+     * @return string
      */
-    public function getNamespace()
+    public function name()
     {
-      return Ns::of($this);
+      return $this->m_name;
     }
 
     /**
-     * @return string
+     * @return \Components\Ns
      */
-    public function getName()
+    public function ns()
     {
-      return $this->m_name;
+      return new Ns($this->m_name);
+    }
+
+    /**
+     * @param mixed $object_
+     *
+     * @return boolean
+     */
+    public function isTypeOf($object_)
+    {
+      return $object_ instanceof $this->m_name;
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -80,7 +101,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
@@ -88,7 +109,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {

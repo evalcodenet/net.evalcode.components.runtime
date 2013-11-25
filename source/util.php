@@ -2,11 +2,11 @@
 
 
   if(false===defined('COMPONENTS_INSTANCE_NAMESPACE'))
-    define('COMPONENTS_INSTANCE_NAMESPACE', md5(__DIR__));
+    define('COMPONENTS_INSTANCE_NAMESPACE', substr(md5(__DIR__), 0, 6));
   if(false===defined('COMPONENTS_LAST_UPDATE'))
     define('COMPONENTS_LAST_UPDATE', filemtime(dirname(__DIR__)));
   if(false===defined('COMPONENTS_CACHE_NAMESPACE'))
-    define('COMPONENTS_CACHE_NAMESPACE', md5(COMPONENTS_INSTANCE_NAMESPACE.COMPONENTS_LAST_UPDATE));
+    define('COMPONENTS_CACHE_NAMESPACE', COMPONENTS_INSTANCE_NAMESPACE.'_'.substr(md5(COMPONENTS_INSTANCE_NAMESPACE.COMPONENTS_LAST_UPDATE), 0, 6));
 
   if(false===defined('COMPONENTS_RUNTIME_VERSION_MAJOR'))
   {
@@ -26,7 +26,7 @@
    */
   function dump($arg0_/*, $arg1_..*/)
   {
-    \Components\Debug::_dump(func_get_args());
+    \Components\Debug::vinfo(func_get_args());
 
     if(1===func_num_args())
       return func_get_arg(0);
@@ -200,11 +200,13 @@
    */
   function object_hash($object_)
   {
-    return (int)str_replace(
-      array('a', 'b', 'c', 'd', 'e', 'f'),
-      array('1', '2', '3', '4', '5', '6'),
+    $hash=str_replace(
+      ['a', 'b', 'c', 'd', 'e', 'f', '0'],
+      ['11', '12', '13', '14', '15', '16', ''],
       spl_object_hash($object_)
     );
+
+    return $hash;
   }
 
   /**
@@ -390,41 +392,123 @@
     return $hash;
   }
 
-  function exception_as_json(\Exception $e_)
+  function exception_as_array(\Exception $e_, $includeStackTrace_=false, $stackTraceAsArray_=false)
   {
     if($e_ instanceof \Components\Runtime_Exception
       || $e_ instanceof \Components\Runtime_ErrorException)
-      return $e_->toJson();
+      return $e_->toArray($includeStackTrace_, $stackTraceAsArray_);
 
-    $type=get_class($e_);
+    $type=Components\Type::of($e_);
 
-    return json_encode(array(
-      'type'=>$type,
+    $exceptionAsArray=[
+      'type'=>$type->name(),
       'code'=>$e_->getCode(),
-      'namespace'=>strtolower(strtr($type, '\\_', '//')),
+      'namespace'=>$type->ns()->name(),
       'message'=>$e_->getMessage(),
-      'stack'=>$e_->getTraceAsString()
-    ));
+      'file'=>$e_->getFile(),
+      'line'=>$e_->getLine()
+    ];
+
+    if($includeStackTrace_ && $stackTraceAsArray_)
+      $exceptionAsArray['stack']=exception_stacktrace_as_array($e_);
+    else if($includeStackTrace_)
+      $exceptionAsArray['stack']=$e_->getTraceAsString();
+
+    return $exceptionAsArray;
   }
 
-  function exception_header(\Exception $e_)
+  function exception_stacktrace_as_array(\Exception $e_)
   {
-    if(headers_sent())
-      return;
+    $trace=[];
 
+    foreach($e_->getTrace() as $element)
+    {
+      $traceElement=[];
+      if(isset($element['file']))
+        $traceElement['file']=$element['file'];
+      if(isset($element['line']))
+        $traceElement['line']=$element['line'];
+      if(isset($element['class']))
+        $traceElement['class']=$element['class'];
+      if(isset($element['function']))
+        $traceElement['function']=$element['function'];
+
+      $trace[]=$traceElement;
+    }
+
+    return $trace;
+  }
+
+  function exception_as_json(\Exception $e_, $includeStackTrace_=false, $stackTraceAsArray_=false)
+  {
     if($e_ instanceof \Components\Runtime_Exception
       || $e_ instanceof \Components\Runtime_ErrorException)
+      return $e_->toJson($includeStackTrace_, $stackTraceAsArray_);
+
+    return json_encode(exception_as_array($e_, $includeStackTrace_, $stackTraceAsArray_));
+  }
+
+  function exception_header(\Exception $e_, $includeStackTrace_=false, $stackTraceAsArray_=false)
+  {
+    if(false===headers_sent() && \Components\Runtime::isManagementAccess())
     {
-      $e_->sendHeader();
+      $hash=object_hash_md5($e_);
+      header("Components-Exception-$hash: ".json_encode([
+        $hash,
+        $e_->getFile(),
+        $e_->getLine(),
+        exception_as_array($e_, $includeStackTrace_, $stackTraceAsArray_)
+      ]), true, 500);
+    }
+  }
+
+  function exception_print_cli(\Exception $e_, $includeSource_=false, $includeStackTrace_=false)
+  {
+    $type=Components\Type::of($e_);
+
+    printf('
+      [%1$s] %2$s in %4$s
+      %6$s
+      %3$s
+      %6$s
+      %5$s
+      %6$s',
+        object_hash_md5($e_),
+        $type->name(),
+        $e_->getMessage(),
+        $includeSource_?implode(':', [$e_->getFile(), $e_->getLine()]):'',
+        $includeStackTrace_?$e_->getTraceAsString():'',
+        PHP_EOL
+    );
+  }
+
+  function exception_print_html(\Exception $e_, $includeSource_=false, $includeStackTrace_=false)
+  {
+    if($includeSource_)
+    {
+      $type=Components\Type::of($e_);
+
+      printf('
+        <h1 style="color:black;background:white;font:17px/20px mono;text-align:left;margin:0;padding:0;">[%1$s] %2$s</h1>
+        <h2 style="color:black;background:white;font:15px/17px mono;text-align:left;margin:0;padding:0;">%3$s</h2>
+        <h3 style="color:black;background:white;font:13px/15px mono;text-align:left;margin:0;padding:0;">%4$s</h3>
+        <pre style="color:black;background:white;font:11px/13px mono;text-align:left;margin:0;padding:0;">%5$s</pre>',
+          object_hash_md5($e_),
+          $type->name(),
+          $e_->getMessage(),
+          $includeSource_?implode(':', [$e_->getFile(), $e_->getLine()]):'',
+          $includeStackTrace_?$e_->getTraceAsString():''
+      );
     }
     else
     {
-      header('HTTP/1.1 500 Internal Server Error', true, 500);
+      printf('<h1>%1$s</h1><h2>%2$s</h2>',
+        object_hash_md5($e_),
+        $e_->getMessage()
+      );
 
-      $hash=object_hash_md5($e_);
-      header("Components-Exception: $hash");
-      if(\Components\Runtime::isManagementAccess())
-        header("$hash: ".exception_as_json($e_));
+      if($includeStackTrace_)
+        echo '<pre>'.$e_->getTraceAsString().'</pre>';
     }
   }
 

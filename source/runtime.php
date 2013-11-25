@@ -38,11 +38,11 @@ namespace Components;
       {
         self::$m_instance=new self();
 
-        set_error_handler(array(self::$m_instance, 'onErrorException'), error_reporting());
-        set_exception_handler(array(self::$m_instance, 'onException'));
+        set_error_handler([self::$m_instance, 'onError'], error_reporting());
+        set_exception_handler([self::$m_instance, 'onException']);
 
-        self::$m_cacheFile=sys_get_temp_dir().DIRECTORY_SEPARATOR.COMPONENTS_INSTANCE_NAMESPACE.'-'.COMPONENTS_CACHE_NAMESPACE.'.cache';
-        register_shutdown_function(array(self::$m_instance, 'onExit'));
+        self::$m_cacheFile=sys_get_temp_dir().DIRECTORY_SEPARATOR.COMPONENTS_CACHE_NAMESPACE.'.cache';
+        register_shutdown_function([self::$m_instance, 'onExit']);
 
         if('cli'===PHP_SAPI)
         {
@@ -55,6 +55,8 @@ namespace Components;
         );
 
         Environment::includeConfig('runtime.php');
+
+        self::$m_isManagementAccess='cli'===PHP_SAPI || isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps);
       }
 
       return self::$m_instance;
@@ -97,7 +99,7 @@ namespace Components;
      */
     public static function isManagementAccess()
     {
-      return isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps);
+      return self::$m_isManagementAccess;
     }
 
     /**
@@ -127,69 +129,188 @@ namespace Components;
     /**
      * @param \Components\Runtime_Error_Handler $errorHandler_
      */
-    public static function addRuntimeErrorHandler(Runtime_Error_Handler $errorHandler_)
+    public static function pushRuntimeErrorHandler(Runtime_Error_Handler $errorHandler_)
     {
-      self::$m_runtimeErrorHandlers[]=$errorHandler_;
+      array_unshift(self::$m_runtimeErrorHandlers, $errorHandler_);
+    }
+
+    /**
+     * @param \Components\Runtime_Error_Handler $errorHandler_
+     */
+    public static function popRuntimeErrorHandler()
+    {
+      return array_shift(self::$m_runtimeErrorHandlers);
+    }
+
+    /**
+     * @return \Components\Runtime_Exception_Handler[]
+     */
+    public static function getRuntimeExceptionHandlers()
+    {
+      return self::$m_runtimeExceptionHandlers;
+    }
+
+    /**
+     * @param \Components\Runtime_Exception_Handler $exceptionHandler_
+     */
+    public static function pushRuntimeExceptionHandler(Runtime_Exception_Handler $exceptionHandler_)
+    {
+      array_unshift(self::$m_runtimeExceptionHandlers, $exceptionHandler_);
+    }
+
+    /**
+     * @param \Components\Runtime_Exception_Handler $exceptionHandler_
+     */
+    public static function popRuntimeExceptionHandler()
+    {
+      return array_shift(self::$m_runtimeExceptionHandlers);
+    }
+
+    /**
+     * @return boolean
+     */
+    public static function hasExceptions()
+    {
+      return 0<count(self::$m_exceptions);
+    }
+
+    /**
+     * @return \Exception[]
+     */
+    public static function getExceptions()
+    {
+      return self::$m_exceptions;
+    }
+
+    /**
+     * Returns and clears exceptions.
+     *
+     * @return \Exception[]
+     */
+    public static function clearExceptions()
+    {
+      $exceptions=self::$m_exceptions;
+      self::$m_exceptions=[];
+
+      return $exceptions;
+    }
+
+    /**
+     * @param \Exception $e_
+     */
+    public static function addException(\Exception $e_)
+    {
+      exception_log($e_);
+      exception_header($e_, true, false);
+
+      array_push(self::$m_exceptions, $e_);
+    }
+
+    /**
+     * @param \Exception $e_
+     */
+    public static function removeException(\Exception $e_)
+    {
+      $hash=object_hash_md5($e_);
+
+      $exceptions=[];
+      foreach(self::$m_exceptions as $exception)
+      {
+        if($hash!==object_hash_md5($exception))
+          $exceptions[]=$exception;
+      }
+
+      self::$m_exceptions=$exception;
     }
     //--------------------------------------------------------------------------
 
 
     // ACCESSORS
+    public function onExit()
+    {
+      $error=error_get_last();
+
+      if(null!==$error)
+      {
+        $this->onError(
+          $error['type'],
+          $error['message'],
+          $error['file'],
+          $error['line']
+        );
+      }
+
+      if(Debug::active() && (self::isManagementAccess() || Environment::isDev()))
+      {
+        Debug::verror(self::$m_exceptions);
+        Debug::flush();
+
+        self::$m_exceptions=[];
+      }
+
+      if(Environment::isLive())
+        self::$m_exceptions=[];
+
+      foreach(self::$m_exceptions as $exception)
+        exception_print_html($exception, true, true);
+
+      if('cli'===PHP_SAPI)
+      {
+        foreach(self::$m_exceptions as $exception)
+          exception_print_cli($exception, true, true);
+
+        if(false===@is_file(self::$m_cacheFile))
+          Cache::dump(self::$m_cacheFile);
+      }
+    }
+    //--------------------------------------------------------------------------
+
+
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * @see \Components\Runtime_Exception_Handler::onException() onException
+     */
     public function onException(\Exception $e_)
     {
-      exception_log($e_);
-
-      // TODO Collect/queue for further developer notifications...
-      if(Environment::isCli())
+      foreach(self::$m_runtimeExceptionHandlers as $exceptionHandler)
       {
-        printf('
-          %1$s in %3$s
-          %5$s
-          %2$s
-          %5$s
-          %4$s
-          %5$s',
-            get_class($e_),
-            $e_->getMessage(),
-            implode(':', array($e_->getFile(), $e_->getLine())),
-            $e_->getTraceAsString(),
-            PHP_EOL
-        );
+        if(true===$exceptionHandler->onException($e_))
+          return true;
       }
-      else if(Environment::isDev())
-      {
-        exception_header($e_);
 
-        printf('<?xml encoding="utf-8" version="1.0"?>%4$s
-          <!DOCTYPE HTML>%4$s
-          <html>
-            <head>
-              <meta charset="utf-8"/>
-              <title>%1$s</title>
-            </head>
-            <body>
-              <h1>%1$s</h1>
-              <h2>%2$s</h2>
-              <pre>%3$s</pre>
-            </body>
-          </html>',
-            $e_->getMessage(),
-            implode(':', array($e_->getFile(), $e_->getLine())),
-            $e_->getTraceAsString(),
-            PHP_EOL
-        );
-      }
-      else
+      self::addException($e_);
+
+      return true;
+    }
+
+    /**
+     * @see \Components\Runtime_Error_Handler::onError() onError
+     */
+    public function onError($type_, $message_, $filename_, $line_)
+    {
+      if(false!==strpos($message_, 'Allowed memory size'))
       {
         ob_clean();
-        exception_header($e_);
+
+        if('cli'===PHP_SAPI)
+        {
+          echo "Out of memory!\n";
+        }
+        else
+        {
+          Log::error('components/runtime', 'Out of memory.');
+
+          if(false===headers_sent())
+          {
+            header('HTTP/1.1 500 Internal Server Error', true, 500);
+            if(self::isManagementAccess())
+              header('Components-Exception-0: Out of memory.');
+          }
+        }
 
         exit;
       }
-    }
 
-    public function onErrorException($type_, $message_, $filename_, $line_)
-    {
       $error=new Runtime_ErrorException(
         'components/runtime', $message_, $type_, $filename_, $line_
       );
@@ -197,33 +318,16 @@ namespace Components;
       foreach(self::$m_runtimeErrorHandlers as $errorHandler)
       {
         if(true===$errorHandler->onError($error))
-          return;
+          return true;
       }
 
-      exception_log($error);
+      self::addException($error);
+
+      return true;
     }
 
-    public function onExit()
-    {
-      $error=error_get_last();
-
-      if(null!==$error)
-      {
-        $this->onErrorException(
-          $error['type'], $error['message'], $error['file'], $error['line']
-        );
-      }
-
-      // TODO (CSH) What if is_file or Cache::dump throws an exception here?
-      if(false===is_file(self::$m_cacheFile))
-        Cache::dump(self::$m_cacheFile);
-    }
-    //--------------------------------------------------------------------------
-
-
-    // OVERRIDES
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
@@ -231,7 +335,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -242,7 +346,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
@@ -258,13 +362,25 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
+     * @var boolean
+     */
+    private static $m_isManagementAccess=false;
+    /**
      * @var string[]
      */
-    private static $m_managementIps=array('127.0.0.1', '::1');
+    private static $m_managementIps=['127.0.0.1', '::1'];
     /**
      * @var \Components\Runtime_Error_Handler[]
      */
     private static $m_runtimeErrorHandlers=[];
+    /**
+     * @var \Components\Runtime_Exception_Handler[]
+     */
+    private static $m_runtimeExceptionHandlers=[];
+    /**
+     * @var \Exception[]
+     */
+    private static $m_exceptions=[];
     /**
      * @var string
      */
@@ -313,7 +429,7 @@ namespace Components;
      */
     public static function getClassloaders()
     {
-      return array_merge(array(self::$m_instance), self::$m_classloaders);
+      return array_merge([self::$m_instance], self::$m_classloaders);
     }
 
     /**
@@ -455,9 +571,8 @@ namespace Components;
     {
       if(isset($this->m_classpaths[$clazz_]))
       {
-        require_once $this->m_classpaths[$clazz_];
-
-        return true;
+        if(@include_once $this->m_classpaths[$clazz_])
+          return true;
       }
 
       // FIXME (CSH) Avoid re-initialization if combined with other classloaders, yet keep laziness, merge sub-classloaders & provide resource names/lookup.
@@ -468,9 +583,8 @@ namespace Components;
 
       if(isset($this->m_classpaths[$clazz_]))
       {
-        require_once $this->m_classpaths[$clazz_];
-
-        return true;
+        if(@include_once $this->m_classpaths[$clazz_])
+          return true;
       }
 
       $this->m_refresh=true;
@@ -478,9 +592,8 @@ namespace Components;
 
       if(isset($this->m_classpaths[$clazz_]))
       {
-        require_once $this->m_classpaths[$clazz_];
-
-        return true;
+        if(@include_once $this->m_classpaths[$clazz_])
+          return true;
       }
 
       /* @var $classloader \Components\Classloader */
@@ -500,9 +613,8 @@ namespace Components;
 
       if(isset($this->m_classpaths[$clazz_]))
       {
-        require_once $this->m_classpaths[$clazz_];
-
-        return true;
+        if(@include_once $this->m_classpaths[$clazz_])
+          return true;
       }
 
       return false;
@@ -544,10 +656,13 @@ namespace Components;
      */
     private static $m_classloaders=[];
     /**
+     * @var integer
+     */
+    private static $m_count=0;
+    /**
      * @var \Components\Runtime_Classloader
      */
     private static $m_instance;
-    private static $m_count=0;
 
     /**
      * @var string[]
@@ -595,6 +710,9 @@ namespace Components;
 
 
     // ACCESSORS
+    /**
+     * @return string
+     */
     public function getNamespace()
     {
       return $this->m_namespace;
@@ -603,66 +721,78 @@ namespace Components;
     public function log()
     {
       if($this->m_logEnabled)
-        Log::error($this->m_namespace, '[%s] %s%s', md5($this->hashCode()), get_class($this), $this);
+      {
+        Log::error($this->m_namespace, '[%s] %s%s',
+          object_hash_md5($this),
+          get_class($this),
+          $this
+        );
+      }
     }
 
     /**
-     * Sends exception details as header: Components-Exception.
+     * @return string[]
      */
-    public function sendHeader()
+    public function toArray($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
-      header('HTTP/1.1 500 Internal Server Error', true, 500);
-
-      $hash=md5($this->hashCode());
-      header("Components-Exception: $hash");
-      if(Runtime::isManagementAccess())
-        header("$hash: {$this->toJson()}");
-    }
-
-    /**
-     * @return string
-     */
-    public function toJson()
-    {
-      return json_encode(array(
+      $asArray=[
         'type'=>get_class($this),
         'code'=>$this->code,
         'namespace'=>$this->getNamespace(),
         'message'=>$this->getMessage(),
-        'stack'=>$this->getTraceAsString()
-      ));
+        'file'=>$this->getFile(),
+        'line'=>$this->getLine()
+      ];
+
+      if($includeStackTrace_ && $stackTraceAsArray_)
+        $asArray['stack']=exception_stacktrace_as_array($this);
+      else if($includeStackTrace_)
+        $asArray['stack']=$this->getTraceAsString();
+
+      return $asArray;
     }
 
     /**
      * @return string
      */
-    public function toXml()
+    public function toJson($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
-      // TODO Embed stack trace.
-      return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
-        <exception>%7$s
-          <type>%1$s</type>%7$s
-          <pre>%2$s</pre>%7$s
-          <namespace>%3$s</namespace>%7$s
-          <message>%4$s</message>%7$s
-          <source>%5$s</source>%7$s
-          <stack>%6$s</stack>%7$s
-        </exception>',
-        get_class($this),
-        $this->code,
-        $this->getNamespace(),
-        $this->getMessage(),
-        implode(':', array($this->getFile(), $this->getLine())),
-        json_encode($this->getTraceAsString()),
-        PHP_EOL
-      );
+      return json_encode($this->toArray($includeStackTrace_, $stackTraceAsArray_));
+    }
+
+    /**
+     * @return string
+     */
+    public function toXml($includeStackTrace_=false, $stackTraceAsArray_=false)
+    {
+      $xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+      $xml.="<exception>\n";
+
+      foreach($this->toArray($includeStackTrace_, $stackTraceAsArray_) as $key=>$value)
+      {
+        if(is_array($value))
+        {
+          $xml.="\t<stack>\n";
+          foreach($value as $k=>$v)
+            $xml.="\t\t<$k>".String::escapeJs($v)."</$k>\n";
+          $xml.="\t</stack>\n";
+        }
+        else
+        {
+          $xml.="\t<$key>".String::escapeJs($value)."</$key>\n";
+        }
+      }
+
+      $xml.="</exception>\n";
+
+      return $xml;
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
@@ -670,7 +800,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -681,7 +811,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
@@ -738,59 +868,71 @@ namespace Components;
     public function log()
     {
       if($this->m_logEnabled)
-        Log::error($this->m_namespace, '[%s] %s%s', md5($this->hashCode()), get_class($this), $this);
+      {
+        Log::error($this->m_namespace, '[%s] %s%s',
+          object_hash_md5($this),
+          get_class($this),
+          $this
+        );
+      }
     }
 
     /**
-     * Sends exception details as header: Components-Exception.
+     * @return string[]
      */
-    public function sendHeader()
+    public function toArray($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
-      header('HTTP/1.1 500 Internal Server Error', true, 500);
-
-      $hash=md5($this->hashCode());
-      header("Components-Exception: $hash");
-      if(Runtime::isManagementAccess())
-        header("$hash: {$this->toJson()}");
-    }
-
-    /**
-     * @return string
-     */
-    public function toJson()
-    {
-      return json_encode(array(
+      $asArray=[
         'type'=>get_class($this),
         'code'=>$this->code,
         'namespace'=>$this->getNamespace(),
         'message'=>$this->getMessage(),
-        'stack'=>$this->getTraceAsString()
-      ));
+        'file'=>$this->getFile(),
+        'line'=>$this->getLine()
+      ];
+
+      if($includeStackTrace_ && $stackTraceAsArray_)
+        $asArray['stack']=exception_stacktrace_as_array($this);
+      else if($includeStackTrace_)
+        $asArray['stack']=$this->getTraceAsString();
+
+      return $asArray;
     }
 
     /**
      * @return string
      */
-    public function toXml()
+    public function toJson($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
-      // TODO Embed stack trace.
-      return sprintf('<?xml version="1.0" encoding="utf-8"?>%7$s
-        <exception>%7$s
-          <type>%1$s</type>%7$s
-          <pre>%2$s</pre>%7$s
-          <namespace>%3$s</namespace>%7$s
-          <message>%4$s</message>%7$s
-          <source>%5$s</source>%7$s
-          <stack>%6$s</stack>%7$s
-        </exception>',
-        get_class($this),
-        $this->code,
-        $this->getNamespace(),
-        $this->getMessage(),
-        implode(':', array($this->getFile(), $this->getLine())),
-        json_encode($this->getTraceAsString()),
-        PHP_EOL
-      );
+      return json_encode($this->toArray($includeStackTrace_, $stackTraceAsArray_));
+    }
+
+    /**
+     * @return string
+     */
+    public function toXml($includeStackTrace_=false, $stackTraceAsArray_=false)
+    {
+      $xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
+      $xml.="<exception>\n";
+
+      foreach($this->toArray($includeStackTrace_, $stackTraceAsArray_) as $key=>$value)
+      {
+        if(is_array($value))
+        {
+          $xml.="\t<stack>\n";
+          foreach($value as $k=>$v)
+            $xml.="\t\t<$k>".String::escapeJs($v)."</$k>\n";
+          $xml.="\t</stack>\n";
+        }
+        else
+        {
+          $xml.="\t<$key>".String::escapeJs($value)."</$key>\n";
+        }
+      }
+
+      $xml.="</exception>\n";
+
+      return $xml;
     }
     //--------------------------------------------------------------------------
 
@@ -858,12 +1000,33 @@ namespace Components;
      *
      * @return boolean
      */
-    function onError(Runtime_ErrorException $e_);
+    function onError(\ErrorException $e_);
+    //--------------------------------------------------------------------------
+  }
+
+
+  /**
+   * Runtime_Exception_Handler
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  interface Runtime_Exception_Handler extends Object
+  {
+    // ACCESSORS
+    /**
+     * @param \Components\Runtime_Exception $e_
+     *
+     * @return boolean
+     */
+    function onException(\Exception $e_);
     //--------------------------------------------------------------------------
   }
 
 
   Cache::create();
-  spl_autoload_register(array(new Runtime_Classloader(), 'loadClass'));
+  spl_autoload_register([new Runtime_Classloader(), 'loadClass']);
   Log::push(new Log_Appender_Null('null', Log::FATAL));
 ?>
