@@ -256,7 +256,9 @@ namespace Components;
 
       if(Debug::active() && (self::$m_isManagementAccess || Environment::isDev()))
       {
-        Debug::verror(self::$m_exceptions);
+        if(0<count(self::$m_exceptions))
+          Debug::verror(self::$m_exceptions);
+
         Debug::flush();
 
         self::$m_exceptions=[];
@@ -297,7 +299,7 @@ namespace Components;
       {
         ob_clean();
 
-        if(self::$m_isCli)
+        if('cli'===PHP_SAPI)
         {
           echo "Out of memory!\n";
         }
@@ -305,13 +307,9 @@ namespace Components;
         {
           Log::error('components/runtime', 'Out of memory.');
 
-          if(false===headers_sent())
-          {
-            header('HTTP/1.1 500 Internal Server Error', true, 500);
-
-            if(self::$m_isManagementAccess)
-              header('Components-Exception-0: Out of memory.');
-          }
+          @header('HTTP/1.1 500 Internal Server Error', true, 500);
+          if(self::$m_isManagementAccess)
+            @header('Components-Exception-0: Out of memory.');
         }
 
         exit;
