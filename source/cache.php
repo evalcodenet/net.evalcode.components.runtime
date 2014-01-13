@@ -31,7 +31,7 @@ namespace Components;
         if(session_id())
         {
           if(false===isset($_SESSION[COMPONENTS_CACHE_NAMESPACE]))
-            $_SESSION[COMPONENTS_CACHE_NAMESPACE]=array();
+            $_SESSION[COMPONENTS_CACHE_NAMESPACE]=[];
 
           $storage=&$_SESSION[COMPONENTS_CACHE_NAMESPACE];
         }
