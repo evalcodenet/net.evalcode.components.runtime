@@ -17,6 +17,9 @@ namespace Components;
   class Cache_Backend_Apc implements Cache_Backend
   {
     // STATIC ACCESSORS
+    /**
+     * @return boolean
+     */
     public static function isSupported()
     {
       if(null===self::$m_isSupported)
@@ -30,53 +33,64 @@ namespace Components;
       return self::$m_isSupported;
     }
 
+    /**
+     * @param string $key_
+     * @param scalar[] $constants_
+     *
+     * @return boolean
+     */
     public static function constantsDefine($key_, array $constants_)
     {
-      return apc_define_constants(COMPONENTS_CACHE_NAMESPACE."/$key_", $constants_, true);
+      return apc_define_constants(COMPONENTS_CACHE_NAMESPACE."-$key_", $constants_, true);
     }
 
+    /**
+     * @param string $key_
+     *
+     * @return boolean
+     */
     public static function constantsLoad($key_)
     {
-      return apc_load_constants(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      return apc_load_constants(COMPONENTS_CACHE_NAMESPACE."-$key_");
     }
     //--------------------------------------------------------------------------
 
 
     // ACCESSORS
     /**
-     * @see \Components\Cache_Backend::exists() \Components\Cache_Backend::exists()
+     * @see \Components\Cache_Backend::exists() exists
      */
     public function exists($key_)
     {
-      return apc_exists(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      return apc_exists(COMPONENTS_CACHE_NAMESPACE."-$key_");
     }
 
     /**
-     * @see \Components\Cache_Backend::get() \Components\Cache_Backend::get()
+     * @see \Components\Cache_Backend::get() get
      */
     public function get($key_)
     {
-      return apc_fetch(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      return apc_fetch(COMPONENTS_CACHE_NAMESPACE."-$key_");
     }
 
     /**
-     * @see \Components\Cache_Backend::set() \Components\Cache_Backend::set()
+     * @see \Components\Cache_Backend::set() set
      */
     public function set($key_, $value_, $ttl_=0)
     {
-      return apc_store(COMPONENTS_CACHE_NAMESPACE."/$key_", $value_, $ttl_);
+      return apc_store(COMPONENTS_CACHE_NAMESPACE."-$key_", $value_, $ttl_);
     }
 
     /**
-     * @see \Components\Cache_Backend::remove() \Components\Cache_Backend::remove()
+     * @see \Components\Cache_Backend::remove() remove
      */
     public function remove($key_)
     {
-      return apc_delete(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      return apc_delete(COMPONENTS_CACHE_NAMESPACE."-$key_");
     }
 
     /**
-     * @see \Components\Cache_Backend::dump() \Components\Cache_Backend::dump()
+     * @see \Components\Cache_Backend::dump() dump
      */
     public function dump($filename_)
     {
@@ -85,7 +99,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cache_Backend::load() \Components\Cache_Backend::load()
+     * @see \Components\Cache_Backend::load() load
      */
     public function load($filename_)
     {
@@ -93,7 +107,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cache_Backend::clear() \Components\Cache_Backend::clear()
+     * @see \Components\Cache_Backend::clear() clear
      */
     public function clear($prefix_=null)
     {

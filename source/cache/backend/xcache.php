@@ -16,6 +16,9 @@ namespace Components;
   class Cache_Backend_Xcache implements Cache_Backend
   {
     // STATIC ACCESSORS
+    /**
+     * @return boolean
+     */
     public static function isSupported()
     {
       if(null===self::$m_isSupported)
@@ -33,20 +36,20 @@ namespace Components;
 
     // ACCESSORS
     /**
-     * @see \Components\Cache_Backend::exists() \Components\Cache_Backend::exists()
+     * @see \Components\Cache_Backend::exists() exists
      */
     public function exists($key_)
     {
-      return xcache_isset(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      return xcache_isset(COMPONENTS_CACHE_NAMESPACE."-$key_");
     }
 
     /**
-     * @see \Components\Cache_Backend::get() \Components\Cache_Backend::get()
+     * @see \Components\Cache_Backend::get() get
      */
     public function get($key_)
     {
       // TODO [CSH] Refactor interface to return 'null' for missing/expired keys.
-      $value=xcache_get(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      $value=xcache_get(COMPONENTS_CACHE_NAMESPACE."-$key_");
 
       if(null===$value)
         return false;
@@ -55,23 +58,23 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cache_Backend::set() \Components\Cache_Backend::set()
+     * @see \Components\Cache_Backend::set() set
      */
     public function set($key_, $value_, $ttl_=0)
     {
-      return xcache_set(COMPONENTS_CACHE_NAMESPACE."/$key_", $value_, $ttl_);
+      return xcache_set(COMPONENTS_CACHE_NAMESPACE."-$key_", $value_, $ttl_);
     }
 
     /**
-     * @see \Components\Cache_Backend::remove() \Components\Cache_Backend::remove()
+     * @see \Components\Cache_Backend::remove() remove
      */
     public function remove($key_)
     {
-      return xcache_unset(COMPONENTS_CACHE_NAMESPACE."/$key_");
+      return xcache_unset(COMPONENTS_CACHE_NAMESPACE."-$key_");
     }
 
     /**
-     * @see \Components\Cache_Backend::dump() \Components\Cache_Backend::dump()
+     * @see \Components\Cache_Backend::dump() dump
      */
     public function dump($filename_)
     {
@@ -80,7 +83,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cache_Backend::load() \Components\Cache_Backend::load()
+     * @see \Components\Cache_Backend::load() load
      */
     public function load($filename_)
     {
@@ -89,14 +92,14 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cache_Backend::clear() \Components\Cache_Backend::clear()
+     * @see \Components\Cache_Backend::clear() clear
      */
     public function clear($prefix_=null)
     {
       if(null===$prefix_)
         return xcache_unset_by_prefix(COMPONENTS_CACHE_NAMESPACE);
 
-      return xcache_unset_by_prefix(COMPONENTS_CACHE_NAMESPACE."/$prefix_");
+      return xcache_unset_by_prefix(COMPONENTS_CACHE_NAMESPACE."-$prefix_");
     }
     //--------------------------------------------------------------------------
 
