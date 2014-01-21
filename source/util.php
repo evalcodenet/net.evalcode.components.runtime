@@ -537,10 +537,10 @@
    */
   function runtime_bootstrap()
   {
-    if(defined(__METHOD__))
+    if(defined('components_runtime_bootstrap_invoked'))
       return;
 
-    define(__METHOD__, true);
+    define('components_runtime_bootstrap_invoked', true);
 
     if(false===defined('COMPONENTS_ENVIRONMENT_CONFIG'))
       define('COMPONENTS_ENVIRONMENT_CONFIG', dirname(dirname(__DIR__)).'/app/config/environment.php');
