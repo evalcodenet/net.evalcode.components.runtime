@@ -57,7 +57,12 @@ namespace Components;
 
         Environment::includeConfig('runtime.php');
 
-        self::$m_isManagementAccess=self::$m_isCli || (isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps));
+        /**
+         * FIXME Remove HTTP_X_VARNISH.
+         *
+         * Integrate explicit vendor-independent header to disable management access.
+         */
+        self::$m_isManagementAccess=self::$m_isCli || (false===isset($_SERVER['HTTP_X_VARNISH']) && isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps));
       }
 
       return self::$m_instance;

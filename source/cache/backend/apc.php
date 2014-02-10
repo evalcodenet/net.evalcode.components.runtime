@@ -112,27 +112,23 @@ namespace Components;
     public function clear($prefix_=null)
     {
       if(null===$prefix_)
-      {
         $prefix_=COMPONENTS_CACHE_NAMESPACE;
-
-        apc_delete(new \APCIterator('user', "/^$prefix_*/", APC_ITER_KEY));
-
-        // FIXME Implement cache/backend/opcache or separate into opcache/zend & opcache/apc in independent of cache/backend/* userland caches.
-        if(function_exists('opcache_invalidate'))
-        {
-          Io::pathApplyRecursive(Environment::pathApplication(), function(Io_Path $path_) {
-            if($path_->hasFileExtension(Io_Mimetype::EXTENSION_PHP))
-              opcache_invalidate($path_, true);
-          });
-        }
-        else if(function_exists('opcache_reset'))
-        {
-          opcache_reset();
-        }
-      }
       else
+        $prefix_=COMPONENTS_CACHE_NAMESPACE."-$prefix_";
+
+      apc_delete(new \APCIterator('user', "/^$prefix_*/", APC_ITER_KEY));
+
+      // FIXME Implement cache/backend/opcache or separate into opcache/zend & opcache/apc in independent of cache/backend/* userland caches.
+      if(function_exists('opcache_invalidate'))
       {
-        apc_delete(new \APCIterator('user', "/^$prefix_*/", APC_ITER_KEY));
+        Io::pathApplyRecursive(Environment::pathApplication(), function(Io_Path $path_) {
+          if($path_->hasFileExtension(Io_Mimetype::EXTENSION_PHP))
+            opcache_invalidate($path_, true);
+        });
+      }
+      else if(function_exists('opcache_reset'))
+      {
+        opcache_reset();
       }
     }
     //--------------------------------------------------------------------------
