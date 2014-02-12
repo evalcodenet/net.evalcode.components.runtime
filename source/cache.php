@@ -105,7 +105,7 @@ namespace Components;
 
     /**
      * Caches given value for given key. Optional $ttl_ can be passed
-     * to define seconds until cached value expires.
+     * to define seconds until cached value expires - default 1 day.
      *
      * Returns 'true' when value has been cached successfully, otherwise
      * returns 'false'.
@@ -116,7 +116,7 @@ namespace Components;
      *
      * @return boolean
      */
-    public static function set($key_, $value_, $ttl_=0)
+    public static function set($key_, $value_, $ttl_=86400)
     {
       return self::$m_backend->set($key_, $value_, $ttl_);
     }

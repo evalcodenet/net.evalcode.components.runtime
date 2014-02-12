@@ -35,7 +35,7 @@ namespace Components;
     /**
      * @see \Components\Cache_Backend::set() set
      */
-    public function set($key_, $value_, $ttl_=0)
+    public function set($key_, $value_, $ttl_=86400)
     {
       return true;
     }
