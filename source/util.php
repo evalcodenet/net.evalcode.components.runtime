@@ -394,8 +394,7 @@
 
   function exception_as_array(\Exception $e_, $includeStackTrace_=false, $stackTraceAsArray_=false)
   {
-    if($e_ instanceof \Components\Runtime_Exception
-      || $e_ instanceof \Components\Runtime_ErrorException)
+    if($e_ instanceof \Components\Runtime_Exception_Transformable)
       return $e_->toArray($includeStackTrace_, $stackTraceAsArray_);
 
     $type=Components\Type::of($e_);
@@ -441,8 +440,7 @@
 
   function exception_as_json(\Exception $e_, $includeStackTrace_=false, $stackTraceAsArray_=false)
   {
-    if($e_ instanceof \Components\Runtime_Exception
-      || $e_ instanceof \Components\Runtime_ErrorException)
+    if($e_ instanceof \Components\Runtime_Exception_Transformable)
       return $e_->toJson($includeStackTrace_, $stackTraceAsArray_);
 
     return json_encode(exception_as_array($e_, $includeStackTrace_, $stackTraceAsArray_));
@@ -514,8 +512,7 @@
 
   function exception_log(\Exception $e_)
   {
-    if($e_ instanceof \Components\Runtime_Exception
-      || $e_ instanceof \Components\Runtime_ErrorException)
+    if($e_ instanceof \Components\Runtime_Exception)
     {
       $e_->log();
     }

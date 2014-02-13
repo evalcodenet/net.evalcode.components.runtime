@@ -57,12 +57,25 @@ namespace Components;
 
         Environment::includeConfig('runtime.php');
 
-        /**
-         * FIXME Remove HTTP_X_VARNISH.
-         *
-         * Integrate explicit vendor-independent header to disable management access.
-         */
-        self::$m_isManagementAccess=self::$m_isCli || (false===isset($_SERVER['HTTP_X_VARNISH']) && isset($_SERVER['REMOTE_ADDR']) && in_array($_SERVER['REMOTE_ADDR'], self::$m_managementIps));
+        if(self::$m_isCli)
+        {
+          self::$m_isManagementAccess=true;
+        }
+        else
+        {
+          /**
+           * FIXME Remove HTTP_X_VARNISH.
+           *
+           * Integrate explicit vendor-independent header to disable management access.
+           */
+          $remote=null;
+          if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+            $remote=$_SERVER['HTTP_X_FORWARDED_FOR'];
+          else if(isset($_SERVER['REMOTE_ADDR']) && false===isset($_SERVER['HTTP_X_VARNISH']))
+            $remote=$_SERVER['REMOTE_ADDR'];
+
+          self::$m_isManagementAccess=null!==$remote && in_array($remote, self::$m_managementIps);
+        }
       }
 
       return self::$m_instance;
@@ -232,6 +245,65 @@ namespace Components;
 
 
     // ACCESSORS
+    /**
+     * @link http://php.net/manual/en/function.set-exception-handler.php
+     */
+    public function onException(\Exception $e_)
+    {
+      foreach(self::$m_runtimeExceptionHandlers as $exceptionHandler)
+      {
+        if(true===$exceptionHandler->onException($e_))
+          return true;
+      }
+
+      self::addException($e_);
+
+      return true;
+    }
+
+    /**
+     * @link http://php.net/manual/en/function.set-error-handler.php
+     */
+    public function onError($type_, $message_, $filename_, $line_)
+    {
+      if(false!==strpos($message_, 'Allowed memory size'))
+      {
+        ob_clean();
+
+        if('cli'===PHP_SAPI)
+        {
+          echo "Out of memory!\n";
+        }
+        else
+        {
+          Log::error('components/runtime', 'Out of memory.');
+
+          @header('HTTP/1.1 500 Internal Server Error', true, 500);
+          if(self::$m_isManagementAccess)
+            @header('Components-Exception-0: Out of memory.');
+        }
+
+        exit;
+      }
+
+      $error=new Runtime_Error_Internal(
+        'components/runtime', $message_, $type_, $filename_, $line_
+      );
+
+      foreach(self::$m_runtimeErrorHandlers as $errorHandler)
+      {
+        if(true===$errorHandler->onError($error))
+          return true;
+      }
+
+      self::addException($error);
+
+      return true;
+    }
+
+    /**
+     * @link http://php.net/manual/en/function.register-shutdown-function.php
+     */
     public function onExit()
     {
       $error=error_get_last();
@@ -279,62 +351,6 @@ namespace Components;
 
 
     // OVERRIDES/IMPLEMENTS
-    /**
-     * @see \Components\Runtime_Exception_Handler::onException() onException
-     */
-    public function onException(\Exception $e_)
-    {
-      foreach(self::$m_runtimeExceptionHandlers as $exceptionHandler)
-      {
-        if(true===$exceptionHandler->onException($e_))
-          return true;
-      }
-
-      self::addException($e_);
-
-      return true;
-    }
-
-    /**
-     * @see \Components\Runtime_Error_Handler::onError() onError
-     */
-    public function onError($type_, $message_, $filename_, $line_)
-    {
-      if(false!==strpos($message_, 'Allowed memory size'))
-      {
-        ob_clean();
-
-        if('cli'===PHP_SAPI)
-        {
-          echo "Out of memory!\n";
-        }
-        else
-        {
-          Log::error('components/runtime', 'Out of memory.');
-
-          @header('HTTP/1.1 500 Internal Server Error', true, 500);
-          if(self::$m_isManagementAccess)
-            @header('Components-Exception-0: Out of memory.');
-        }
-
-        exit;
-      }
-
-      $error=new Runtime_ErrorException(
-        'components/runtime', $message_, $type_, $filename_, $line_
-      );
-
-      foreach(self::$m_runtimeErrorHandlers as $errorHandler)
-      {
-        if(true===$errorHandler->onError($error))
-          return true;
-      }
-
-      self::addException($error);
-
-      return true;
-    }
-
     /**
      * @see \Components\Object::hashCode() hashCode
      */
@@ -516,9 +532,9 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
+    // IMPLEMENTS
     /**
-     * @see \Components\Classloader::getClasspaths() \Components\Classloader::getClasspaths()
+     * @see \Components\Classloader::getClasspaths() getClasspaths
      */
     public function getClasspaths()
     {
@@ -541,7 +557,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Classloader::initialize() \Components\Classloader::initialize()
+     * @see \Components\Classloader::initialize() initialize
      */
     public function initialize()
     {
@@ -578,7 +594,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Classloader::loadClass() \Components\Classloader::loadClass()
+     * @see \Components\Classloader::loadClass() loadClass
      */
     public function loadClass($clazz_)
     {
@@ -634,7 +650,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
@@ -642,7 +658,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -654,7 +670,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
@@ -705,46 +721,71 @@ namespace Components;
    *
    * @author evalcode.net
    */
-  class Runtime_Exception extends \Exception implements Object
+  interface Runtime_Exception extends Object
   {
-    // CONSTRUCTION
-    public function __construct($namespace_, $message_, \Exception $cause_=null, $logEnabled_=true)
-    {
-      // TODO Upgrade servers and remove this ...
-      if(4<PHP_MAJOR_VERSION && 2<PHP_MINOR_VERSION)
-        parent::__construct($message_, null, $cause_);
-      else
-        parent::__construct($message_);
-
-      $this->m_namespace=$namespace_;
-      $this->m_logEnabled=$logEnabled_;
-    }
-    //--------------------------------------------------------------------------
-
-
     // ACCESSORS
     /**
      * @return string
      */
-    public function getNamespace()
-    {
-      return $this->m_namespace;
-    }
-
-    public function log()
-    {
-      if($this->m_logEnabled)
-      {
-        Log::error($this->m_namespace, '[%s] %s%s',
-          object_hash_md5($this),
-          get_class($this),
-          $this
-        );
-      }
-    }
+    function getNamespace();
 
     /**
-     * @return string[]
+     * @return void
+     */
+    function log();
+    //--------------------------------------------------------------------------
+  }
+
+
+  /**
+   * Runtime_Exception_Transformable
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  interface Runtime_Exception_Transformable
+  {
+    // ACCESSORS
+    /**
+     * @param boolean $includeStackTrace_
+     * @param boolean $stackTraceAsArray_
+     *
+     * @return mixed[]
+     */
+    function toArray($includeStackTrace_=false, $stackTraceAsArray_=false);
+    /**
+     * @param boolean $includeStackTrace_
+     * @param boolean $stackTraceAsArray_
+     *
+     * @return string
+     */
+    function toJson($includeStackTrace_=false, $stackTraceAsArray_=false);
+    /**
+     * @param boolean $includeStackTrace_
+     * @param boolean $stackTraceAsArray_
+     *
+     * @return string
+     */
+    function toXml($includeStackTrace_=false, $stackTraceAsArray_=false);
+    //--------------------------------------------------------------------------
+  }
+
+
+  /**
+   * Runtime_Exception_Transformable_Default
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  trait Runtime_Exception_Transformable_Default/* implements Runtime_Exception_Transformable*/
+  {
+    // IMPLEMENTS
+    /**
+     * @see \Components\Runtime_Exception_Transformable::toArray() toArray
      */
     public function toArray($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
@@ -766,7 +807,7 @@ namespace Components;
     }
 
     /**
-     * @return string
+     * @see \Components\Runtime_Exception_Transformable::toJson() toJson
      */
     public function toJson($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
@@ -774,7 +815,7 @@ namespace Components;
     }
 
     /**
-     * @return string
+     * @see \Components\Runtime_Exception_Transformable::toXml() toXml
      */
     public function toXml($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
@@ -801,9 +842,60 @@ namespace Components;
       return $xml;
     }
     //--------------------------------------------------------------------------
+  }
 
 
-    // OVERRIDES
+  /**
+   * Runtime_Exception_Abstract
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  abstract class Runtime_Exception_Abstract extends \Exception
+    implements Runtime_Exception, Runtime_Exception_Transformable
+  {
+    // DEFAULTS
+    use Runtime_Exception_Transformable_Default;
+    //--------------------------------------------------------------------------
+
+
+    // CONSTRUCTION
+    public function __construct($namespace_, $message_, \Exception $cause_=null, $logEnabled_=true)
+    {
+      parent::__construct($message_, null, $cause_);
+
+      $this->m_namespace=$namespace_;
+      $this->m_logEnabled=$logEnabled_;
+    }
+    //--------------------------------------------------------------------------
+
+
+    // IMPLEMENTS
+    /**
+     * @see \Components\Runtime_Exception::getNamespace() getNamespace
+     */
+    public function getNamespace()
+    {
+      return $this->m_namespace;
+    }
+
+    /**
+     * @see \Components\Runtime_Exception::log() log
+     */
+    public function log()
+    {
+      if($this->m_logEnabled)
+      {
+        Log::error($this->m_namespace, '[%s] %s%s',
+          object_hash_md5($this),
+          get_class($this),
+          $this
+        );
+      }
+    }
+
     /**
      * @see \Components\Object::hashCode() hashCode
      */
@@ -844,22 +936,62 @@ namespace Components;
 
 
     // IMPLEMENTATION
+    /**
+     * @var boolean
+     */
     protected $m_logEnabled;
+    /**
+     * @var string
+     */
     protected $m_namespace;
     //--------------------------------------------------------------------------
   }
 
 
   /**
-   * Runtime_ErrorException
+   * Runtime_Exception_Internal
    *
    * @api
    * @package net.evalcode.components.runtime
    *
    * @author evalcode.net
    */
-  class Runtime_ErrorException extends \ErrorException implements Object
+  class Runtime_Exception_Internal extends Runtime_Exception_Abstract
   {
+
+  }
+
+
+  /**
+   * Runtime_Error
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  interface Runtime_Error extends Runtime_Exception
+  {
+
+  }
+
+
+  /**
+   * Runtime_Error_Abstract
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  abstract class Runtime_Error_Abstract extends \ErrorException
+    implements Runtime_Error, Runtime_Exception_Transformable
+  {
+    // DEFAULTS
+    use Runtime_Exception_Transformable_Default;
+    //--------------------------------------------------------------------------
+
+
     // CONSTRUCTION
     public function __construct($namespace_, $message_, $code_=null,
       $filename_=null, $line_=0, \Exception $cause_=null, $logEnabled_=true)
@@ -872,12 +1004,18 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // ACCESSORS
+    // IMPLEMENTS
+    /**
+     * @see \Components\Runtime_Exception::getNamespace() getNamespace
+     */
     public function getNamespace()
     {
       return $this->m_namespace;
     }
 
+    /**
+     * @see \Components\Runtime_Exception::log() log
+     */
     public function log()
     {
       if($this->m_logEnabled)
@@ -891,68 +1029,7 @@ namespace Components;
     }
 
     /**
-     * @return string[]
-     */
-    public function toArray($includeStackTrace_=false, $stackTraceAsArray_=false)
-    {
-      $asArray=[
-        'type'=>get_class($this),
-        'code'=>$this->code,
-        'namespace'=>$this->getNamespace(),
-        'message'=>$this->getMessage(),
-        'file'=>$this->getFile(),
-        'line'=>$this->getLine()
-      ];
-
-      if($includeStackTrace_ && $stackTraceAsArray_)
-        $asArray['stack']=exception_stacktrace_as_array($this);
-      else if($includeStackTrace_)
-        $asArray['stack']=$this->getTraceAsString();
-
-      return $asArray;
-    }
-
-    /**
-     * @return string
-     */
-    public function toJson($includeStackTrace_=false, $stackTraceAsArray_=false)
-    {
-      return json_encode($this->toArray($includeStackTrace_, $stackTraceAsArray_));
-    }
-
-    /**
-     * @return string
-     */
-    public function toXml($includeStackTrace_=false, $stackTraceAsArray_=false)
-    {
-      $xml="<?xml version=\"1.0\" encoding=\"utf-8\"?>\n";
-      $xml.="<exception>\n";
-
-      foreach($this->toArray($includeStackTrace_, $stackTraceAsArray_) as $key=>$value)
-      {
-        if(is_array($value))
-        {
-          $xml.="\t<stack>\n";
-          foreach($value as $k=>$v)
-            $xml.="\t\t<$k>".String::escapeJs($v)."</$k>\n";
-          $xml.="\t</stack>\n";
-        }
-        else
-        {
-          $xml.="\t<$key>".String::escapeJs($value)."</$key>\n";
-        }
-      }
-
-      $xml.="</exception>\n";
-
-      return $xml;
-    }
-    //--------------------------------------------------------------------------
-
-
-    // OVERRIDES
-    /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
@@ -960,7 +1037,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -971,7 +1048,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
@@ -991,9 +1068,29 @@ namespace Components;
 
 
     // IMPLEMENTATION
+    /**
+     * @var boolean
+     */
     protected $m_logEnabled;
+    /**
+     * @var string
+     */
     protected $m_namespace;
     //--------------------------------------------------------------------------
+  }
+
+
+  /**
+   * Runtime_Error_Internal
+   *
+   * @api
+   * @package net.evalcode.components.runtime
+   *
+   * @author evalcode.net
+   */
+  class Runtime_Error_Internal extends Runtime_Error_Abstract
+  {
+
   }
 
 
