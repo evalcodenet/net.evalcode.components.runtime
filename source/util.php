@@ -457,6 +457,9 @@
         $e_->getLine(),
         exception_as_array($e_, $includeStackTrace_, $stackTraceAsArray_)
       ]), true, 500);
+
+      if($cause=$e_->getPrevious())
+        exception_header($cause, $includeStackTrace_, $stackTraceAsArray_);
     }
   }
 
@@ -478,6 +481,9 @@
         $includeStackTrace_?$e_->getTraceAsString():'',
         PHP_EOL
     );
+
+    if($cause=$e_->getPrevious())
+      exception_print_cli($cause, $includeSource_, $includeStackTrace_);
   }
 
   function exception_print_html(\Exception $e_, $includeSource_=false, $includeStackTrace_=false)
@@ -508,6 +514,9 @@
       if($includeStackTrace_)
         echo '<pre>'.$e_->getTraceAsString().'</pre>';
     }
+
+    if($cause=$e_->getPrevious())
+      exception_print_cli($cause, $includeSource_, $includeStackTrace_);
   }
 
   function exception_log(\Exception $e_)
