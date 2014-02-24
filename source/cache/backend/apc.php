@@ -78,7 +78,16 @@ namespace Components;
      */
     public function set($key_, $value_, $ttl_=86400)
     {
-      return apc_store(COMPONENTS_CACHE_NAMESPACE."-$key_", $value_, $ttl_);
+      if(false===@apc_store(COMPONENTS_CACHE_NAMESPACE."-$key_", $value_, $ttl_))
+      {
+        Log::warn('components/cache/backend/apc',
+          'Unable to cache value [key: %s, value: %s].', $key_, $value_
+        );
+
+        return false;
+      }
+
+      return true;
     }
 
     /**
