@@ -220,6 +220,14 @@ namespace Components;
     /**
      * @return string
      */
+    public static function pathWeb()
+    {
+      return self::$m_current->m_pathWeb;
+    }
+
+    /**
+     * @return string
+     */
     public static function pathConfigGlobal($file_=null)
     {
       if(null===$file_)
@@ -460,6 +468,25 @@ namespace Components;
     /**
      * @return string
      */
+    public function getPathWeb()
+    {
+      return $this->m_pathWeb;
+    }
+
+    /**
+     * @param string $path_
+     *
+     * @return \Components\Environment
+     */
+    public function setPathWeb($uri_)
+    {
+      $this->m_pathWeb=$uri_;
+
+      return $this;
+    }
+    /**
+     * @return string
+     */
     public function getUriComponents()
     {
       return $this->m_uriComponents;
@@ -612,6 +639,10 @@ namespace Components;
      * @var string
      */
     private $m_pathResource;
+    /**
+     * @var string
+     */
+    private $m_pathWeb;
     /**
      * @var string
      */
