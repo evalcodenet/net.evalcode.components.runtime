@@ -2,7 +2,7 @@
 
 
   if(false===defined('COMPONENTS_INSTANCE_NAMESPACE'))
-    define('COMPONENTS_INSTANCE_NAMESPACE', substr(md5(__DIR__), 0, 6));
+    define('COMPONENTS_INSTANCE_NAMESPACE', md5(__DIR__));
   if(false===defined('COMPONENTS_LAST_UPDATE'))
     define('COMPONENTS_LAST_UPDATE', 0);
   if(false===defined('COMPONENTS_CACHE_NAMESPACE'))
