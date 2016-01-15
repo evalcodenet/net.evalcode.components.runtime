@@ -35,6 +35,7 @@ namespace Components;
       $this->m_pathApplication=$this->m_pathComponents.'/app';
       $this->m_pathConfig=$this->m_pathComponents.'/app/config';
       $this->m_pathResource=$this->m_pathComponents.'/app/resource';
+      $this->m_pathWeb=$this->m_pathWeb.'/app/web';
 
       $this->m_uriComponents='/components';
       $this->m_uriComponentsEmbedded=$this->m_uriComponents.'/embedded';
@@ -484,6 +485,7 @@ namespace Components;
 
       return $this;
     }
+
     /**
      * @return string
      */
