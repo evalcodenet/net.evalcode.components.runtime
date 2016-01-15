@@ -12,6 +12,7 @@ namespace Components;
    *
    * @author evalcode.net
    */
+  // TODO Utilize libstd/cache.
   class Cache
   {
     // STATIC ACCESSORS
@@ -26,7 +27,7 @@ namespace Components;
       }
       else
       {
-        $storage=array();
+        $storage=[];
 
         if(session_id())
         {

@@ -58,7 +58,7 @@ namespace Components;
      */
     public function set($key_, $value_, $ttl_=86400)
     {
-      $this->m_cache[$key_]=array('value'=>$value_, 'time'=>time(), 'ttl'=>$ttl_);
+      $this->m_cache[$key_]=['value'=>$value_, 'time'=>time(), 'ttl'=>$ttl_];
 
       return true;
     }

@@ -16,7 +16,7 @@ namespace Components;
   class Log_Appender_File extends Log_Appender_Abstract
   {
     // CONSTRUCTION
-    public function __construct($name_, $file_, $level_=Log_Appender_Abstract::DEFAULT_LEVEL)
+    public function __construct($name_, $file_, $level_=null)
     {
       parent::__construct($name_, $level_);
 
@@ -27,7 +27,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
+     * @see \Components\Log_Appender::append() append
      */
     public function append($level_, array $args_=[])
     {

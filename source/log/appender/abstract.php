@@ -16,9 +16,10 @@ namespace Components;
   abstract class Log_Appender_Abstract implements Log_Appender
   {
     // PREDEFINED PROPERTIES
-    const DEFAULT_LEVEL=Log::INFO;
-    const DEFAULT_PATTERN="[%d.%u%z] [%h] [%l] [%n] %m\n";
-    const DEFAULT_PATTERN_DATE='Y.m.d\TH:i:s';
+    const PATTERN_DEBUG="[%D] [%L] [%h] [%B] [%r] [%n]\n\t%m\n";
+    const PATTERN_DEFAULT="%d %l %h %b %c %r [%n] %m\n";
+
+    const PATTERN_DATE='c';
     //--------------------------------------------------------------------------
 
 
@@ -34,33 +35,33 @@ namespace Components;
     /**
      * @var integer
      */
-    public $level=self::DEFAULT_LEVEL;
+    public $level;
     /**
      * @var string
      */
-    public $pattern=self::DEFAULT_PATTERN;
+    public $pattern=self::PATTERN_DEFAULT;
     /**
      * @var string
      */
-    public $patternDate=self::DEFAULT_PATTERN_DATE;
+    public $patternDate=self::PATTERN_DATE;
     //--------------------------------------------------------------------------
 
 
     // CONSTRUCTION
-    public function __construct($name_, $level_=self::DEFAULT_LEVEL)
+    public function __construct($name_, $level_=null)
     {
+      if(null===$level_)
+        $level_=Environment::logLevelDefault();
+
       $this->name=$name_;
       $this->level=$level_;
-
-      $this->m_timezone=date('P');
-      $this->host=hostname();
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
     /**
-     * @see \Components\Log_Appender::debug() \Components\Log_Appender::debug()
+     * @see \Components\Log_Appender::debug() debug
      */
     public function debug($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -68,7 +69,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Log_Appender::info() \Components\Log_Appender::info()
+     * @see \Components\Log_Appender::info() info
      */
     public function info($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -76,7 +77,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Log_Appender::warn() \Components\Log_Appender::warn()
+     * @see \Components\Log_Appender::warn() warn
      */
     public function warn($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -84,7 +85,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Log_Appender::error() \Components\Log_Appender::error()
+     * @see \Components\Log_Appender::error() error
      */
     public function error($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -92,7 +93,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Log_Appender::fatal() \Components\Log_Appender::fatal()
+     * @see \Components\Log_Appender::fatal() fatal
      */
     public function fatal($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
@@ -100,15 +101,23 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Log_Appender::initialize() \Components\Log_Appender::initialize()
+     * @see \Components\Log_Appender::initialize() initialize
      */
     public function initialize()
     {
-      // Override if necessary ..
+      if(false===$this->m_initialized)
+      {
+        if(null===$this->host)
+          $this->host=\env\hostname();
+
+        $this->compilePattern($this->pattern);
+
+        $this->m_initialized=true;
+      }
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -119,15 +128,15 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
-      return string_hash($this->name);
+      return \math\hashs($this->name);
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
@@ -143,29 +152,57 @@ namespace Components;
 
 
     // IMPLEMENTATION
-    protected static $m_mapNameToLevel=array(
+    protected static $m_mapNameToLevel=[
       'debug'=>Log::DEBUG,
       'info'=>Log::INFO,
       'warn'=>Log::WARN,
       'error'=>Log::ERROR,
       'fatal'=>Log::FATAL
-    );
-    protected static $m_mapLevelToName=array(
+    ];
+    protected static $m_mapLevelToName=[
       Log::DEBUG=>'debug',
       Log::INFO=>'info',
       Log::WARN=>'warn',
       Log::ERROR=>'error',
       Log::FATAL=>'fatal'
-    );
-    protected static $m_mapLevelToOutput=array(
+    ];
+    protected static $m_mapLevelToOutput=[
       Log::DEBUG=>'DEBUG',
       Log::INFO=>'INFO',
       Log::WARN=>'WARN',
       Log::ERROR=>'ERROR',
       Log::FATAL=>'FATAL'
-    );
+    ];
 
-    private $m_timezone;
+    /**
+     * @var boolean
+     */
+    protected $m_initialized=false;
+    /**
+     * @var string
+     */
+    protected $m_patternCompiled;
+    /**
+     * @var string
+     */
+    protected $m_patternPlaceholder;
+    /**
+     * @var \Closure[]
+     */
+    protected $m_patternCallbacks=[];
+
+    /**
+     * @internal
+     */
+    private $__level;
+    /**
+     * @internal
+     */
+    private $__namespace;
+    /**
+     * @internal
+     */
+    private $__message;
     //-----
 
 
@@ -173,30 +210,101 @@ namespace Components;
      * Format log message and substitute placeholders.
      *
      * @param int $level_
-     * @param array $args_
+     * @param mixed[] $args_
      *
      * @return string
      */
     protected function format($level_, array $args_=[])
     {
-      $time=microtime(true);
-      $time=array(substr($time, 0, COMPONENTS_TIMESTAMP_SIZE),
-        str_pad(substr($time, COMPONENTS_TIMESTAMP_SIZE+1, 3), 3, 0, STR_PAD_LEFT)
+      // FIXME Define scope of / pass scope to preg_replace_callback callback!?
+      $this->__level=$level_;
+      $this->__namespace=array_shift($args_);
+
+      $message=array_shift($args_);
+
+      foreach($args_ as $key=>$value)
+      {
+        if(is_array($value))
+          $args_[$key]=Arrays::toString($value);
+      }
+
+      $this->__message=vsprintf($message, $args_);
+
+      return preg_replace_callback(
+        $this->m_patternPlaceholder,
+        function($placeholder_) {
+          return $this->m_patternCallbacks[reset($placeholder_)]();
+        },
+        $this->m_patternCompiled
+      );
+    }
+
+    protected function compilePattern()
+    {
+      $available=[
+        'l'=>function() {
+          return $this->__level;
+        },
+        'L'=>function() {
+          return self::$m_mapLevelToOutput[$this->__level];
+        },
+        'd'=>function() {
+          return microtime(true);
+        },
+        'D'=>function() {
+          $microtime=(string)microtime(true);
+          return date($this->patternDate, $microtime).substr($microtime, strpos($microtime, '.'));
+        },
+        'b'=>function() {
+          return memory_get_usage(true);
+        },
+        'B'=>function() {
+          return \io\convertToMB(memory_get_usage(true)).' MB';
+        },
+        'm'=>function() {
+          return $this->__message;
+        },
+        'n'=>function() {
+          return $this->__namespace;
+        }
+      ];
+
+      $clientIp=Runtime::getClientAddress();
+      if(!$clientIpLong=ip2long($clientIp))
+        $clientIpLong=0;
+
+      $requestUri='/';
+      if(isset($_SERVER['REQUEST_URI']))
+        $requestUri=$_SERVER['REQUEST_URI'];
+      else if(isset($argv) && 0<$argc)
+        $requestUri=http_build_query($argv);
+
+      $this->m_patternCompiled=\str\replace($this->pattern, ['%h', '%c', '%C', '%r'],
+        [$this->host, $clientIpLong, $clientIp, $requestUri]
       );
 
-      return str_replace(
-        array('%d', '%u', '%z', '%h', '%l', '%n', '%m'),
-        array(
-          date($this->patternDate, $time[0]),
-          $time[1],
-          $this->m_timezone,
-          $this->host,
-          self::$m_mapLevelToOutput[$level_],
-          array_shift($args_),
-          vsprintf(array_shift($args_), $args_)
-        ),
-        $this->pattern
-      );
+      $chars=\str\split($this->pattern, 1);
+      $count=count($chars);
+
+      $placeholders='';
+      $callbacks=[];
+
+      for($idx=0; $idx<$count; $idx++)
+      {
+        if('%'==$chars[$idx] && ++$idx<$count)
+        {
+          $placeholder=$chars[$idx];
+
+          if(isset($available[$placeholder]))
+          {
+            $placeholders.=$placeholder;
+            $callbacks["%$placeholder"]=$available[$placeholder];
+          }
+        }
+      }
+
+      $this->m_patternPlaceholder="/(%[$placeholders])+/";
+      $this->m_patternCallbacks=$callbacks;
     }
     //--------------------------------------------------------------------------
   }

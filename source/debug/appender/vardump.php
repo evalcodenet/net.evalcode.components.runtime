@@ -18,7 +18,8 @@ namespace Components;
     /**
      * @see \Components\Debug_Appender::append() append
      */
-    public function append($severity_, array $args_)
+    public function append($severity_, array $args_,
+      $style_=Debug::STYLE_PLAIN, $sourceFile_=null, $sourceLine_=null)
     {
       echo '<pre style="text-align:left;background:white;color:black;">';
 
@@ -34,22 +35,20 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     * @see \Components\Debug_Appender::groupBegin() groupBegin
      */
-    public function appendGroup($severity_, $message_, array $lines_)
+    public function groupBegin($severity_, $message_,
+      $sourceFile_=null, $sourceLine_=null, $style_=Debug::STYLE_PLAIN)
     {
-      $severities=Debug::severities();
+      // TODO Implement ...
+    }
 
-      echo '<pre style="text-align:left;background:white;color:black;">';
-      echo "[$severities[$severity_]] $message_\n";
-
-      foreach($lines_ as $severity=>$messages)
-      {
-        foreach($messages as $message)
-          echo "[$severities[$severity]] $message\n";
-      }
-
-      echo '</pre>';
+    /**
+     * @see \Components\Debug_Appender::groupEnd() groupEnd
+     */
+    public function groupEnd()
+    {
+      // TODO Implement ...
     }
 
     /**
@@ -57,7 +56,7 @@ namespace Components;
      */
     public function flush()
     {
-      // Do nothing ...
+      // TODO Implement ...
     }
 
     /**
@@ -87,7 +86,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**

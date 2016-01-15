@@ -18,31 +18,29 @@ namespace Components;
     /**
      * @see \Components\Debug_Appender::append() append
      */
-    public function append($severity_, array $args_)
+    public function append($severity_, array $args_,
+      $sourceFile_=null, $sourceLine_=null, $style_=Debug::STYLE_PLAIN)
     {
       Log::current()->append(self::$m_severity[$severity_],
-        array('debug', print_r($this->dehydrate($args_), true))
+        ['debug', print_r($this->dehydrate($args_), true)]
       );
     }
 
     /**
-     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     * @see \Components\Debug_Appender::groupBegin() groupBegin
      */
-    public function appendGroup($severity_, $message_, array $lines_)
+    public function groupBegin($severity_, $message_,
+      $sourceFile_=null, $sourceLine_=null, $style_=Debug::STYLE_PLAIN)
     {
-      Log::current()->append(
-        self::$m_severity[$severity_], array('debug', $message_)
-      );
+      // TODO Implement ...
+    }
 
-      foreach($lines_ as $severity=>$messages)
-      {
-        foreach($messages as $message)
-        {
-          Log::current()->append(
-            self::$m_severity[$severity], array('debug', $message)
-          );
-        }
-      }
+    /**
+     * @see \Components\Debug_Appender::groupEnd() groupEnd
+     */
+    public function groupEnd()
+    {
+      // TODO Implement ...
     }
 
     /**
@@ -80,7 +78,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**

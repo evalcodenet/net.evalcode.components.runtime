@@ -12,11 +12,11 @@ namespace Components;
    *
    * @author evalcode.net
    *
-   * @property string name
-   * @property string host
-   * @property string level
-   * @property string pattern
-   * @property string patternDate
+   * @property string $name
+   * @property string $host
+   * @property string $level
+   * @property string $pattern
+   * @property string $patternDate
    */
   interface Log_Appender extends Object
   {

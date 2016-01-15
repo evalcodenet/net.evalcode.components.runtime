@@ -19,15 +19,33 @@ namespace Components;
     /**
      * @see \Components\Debug_Appender::append() append
      */
-    public function append($severity_, array $args_)
+    public function append($severity_, array $args_,
+      $style_=Debug::STYLE_PLAIN, $sourceFile_=null, $sourceLine_=null)
     {
-      // Do nothing ...
+      // TODO Implement ...
     }
 
     /**
-     * @see \Components\Debug_Appender::appendGroup() appendGroup
+     * @see \Components\Debug_Appender::groupBegin() groupBegin
      */
-    public function appendGroup($severity_, $message_, array $lines_)
+    public function groupBegin($severity_, $message_,
+        $sourceFile_=null, $sourceLine_=null, $style_=Debug::STYLE_PLAIN)
+    {
+      // TODO Implement ...
+    }
+
+    /**
+     * @see \Components\Debug_Appender::groupEnd() groupEnd
+     */
+    public function groupEnd()
+    {
+      // TODO Implement ...
+    }
+
+    /**
+     * @see \Components\Debug_Appender::flush() flush
+     */
+    public function flush()
     {
       // Do nothing ...
     }
@@ -36,14 +54,6 @@ namespace Components;
      * @see \Components\Debug_Appender::clear() clear
      */
     public function clear()
-    {
-      // Do nothing ...
-    }
-
-    /**
-     * @see \Components\Debug_Appender::flush() flush
-     */
-    public function flush()
     {
       // Do nothing ...
     }
@@ -67,7 +77,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**

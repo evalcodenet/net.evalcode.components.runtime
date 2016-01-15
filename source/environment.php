@@ -32,15 +32,16 @@ namespace Components;
 
       $this->m_pathComponents=dirname(dirname(__DIR__));
 
-      $this->m_pathApplication=$this->m_pathComponents.'/app';
-      $this->m_pathConfig=$this->m_pathComponents.'/app/config';
-      $this->m_pathResource=$this->m_pathComponents.'/app/resource';
-      $this->m_pathWeb=$this->m_pathWeb.'/app/web';
+      $this->m_pathApplication=COMPONENTS_PATH_APP;
+      $this->m_pathConfig=COMPONENTS_PATH_APP.'/config';
+      $this->m_pathResource=COMPONENTS_PATH_APP.'/resource';
+      $this->m_pathWeb=COMPONENTS_PATH_APP.'/resource';
 
       $this->m_uriComponents='/components';
       $this->m_uriComponentsEmbedded=$this->m_uriComponents.'/embedded';
 
-      $this->m_uriResource='/resource';
+      $this->m_uriResource='/';
+      $this->m_uriComponentsResource='/resource';
     }
     //--------------------------------------------------------------------------
 
@@ -89,7 +90,7 @@ namespace Components;
       $types=array_flip(self::$m_names);
 
       if(false===isset($types[$name_]))
-        throw new Runtime_Exception('components/environment', sprintf('Passed environment name is not valid [%s].', $name_));
+        throw new Exception_IllegalArgument('components/environment', sprintf('Passed environment name is not valid [%s].', $name_));
 
       return new static($types[$name_]);
     }
@@ -98,8 +99,7 @@ namespace Components;
      * Creates and returns a new empty instance.
      *
      * Expected stage can be defined via one of:
-     * <li>Constant COMPONENTS_ENVIRONMENT</li>
-     * <li>$_SERVER variable COMPONENTS_ENVIRONMENT</li>
+     * <li>Constant COMPONENTS_ENV</li>
      *
      * Returns a LIVE instance if no stage is defined.
      *
@@ -107,17 +107,11 @@ namespace Components;
      */
     public static function create()
     {
-      if(defined('COMPONENTS_ENVIRONMENT'))
-        return new static(COMPONENTS_ENVIRONMENT);
+      $types=array_flip(self::$m_names);
+      $name=strtolower(COMPONENTS_ENV);
 
-      if(isset($_SERVER['COMPONENTS_ENVIRONMENT']))
-      {
-        $types=array_flip(self::$m_names);
-        $name=strtolower($_SERVER['COMPONENTS_ENVIRONMENT']);
-
-        if(isset($types[$name]))
-          return new static($types[$name]);
-      }
+      if(isset($types[$name]))
+        return new static($types[$name]);
 
       return new static(self::LIVE);
     }
@@ -221,14 +215,6 @@ namespace Components;
     /**
      * @return string
      */
-    public static function pathWeb()
-    {
-      return self::$m_current->m_pathWeb;
-    }
-
-    /**
-     * @return string
-     */
     public static function pathConfigGlobal($file_=null)
     {
       if(null===$file_)
@@ -274,7 +260,7 @@ namespace Components;
      *
      * @return string
      */
-    public static function pathComponentResource($component_, $path0_=null/*, $path1_...*/)
+    public static function pathComponentsResource($component_, $path0_=null/*, $path1_...*/)
     {
       return self::$m_current->m_pathComponents.'/'.implode('/', func_get_args());
     }
@@ -290,6 +276,32 @@ namespace Components;
         return self::$m_current->m_pathResource;
 
       return self::$m_current->m_pathResource.'/'.ltrim(implode('/', func_get_args()), '/');
+    }
+
+    /**
+     * @param string... $path_
+     *
+     * @return string
+     */
+    public static function pathWeb($path_=null/*, $path1_...*/)
+    {
+      if(0===func_num_args())
+        return self::$m_current->m_pathWeb;
+
+      return self::$m_current->m_pathWeb.'/'.ltrim(implode('/', func_get_args()), '/');
+    }
+
+    /**
+     * @param string $path_
+     *
+     * @return string
+     */
+    public static function uriResource($path0_=null/*, $path1_...*/)
+    {
+      if(0===func_num_args())
+        return self::$m_current->m_uriResource;
+
+      return rtrim(self::$m_current->m_uriResource, '/').'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
     /**
@@ -318,17 +330,26 @@ namespace Components;
       return rtrim(self::$m_current->m_uriComponentsEmbedded, '/').'/'.ltrim(implode('/', func_get_args()), '/');
     }
 
+
     /**
      * @param string $path_
      *
      * @return string
      */
-    public static function uriResource($path0_=null/*, $path1_...*/)
+    public static function uriComponentsResource($path0_=null/*, $path1_...*/)
     {
       if(0===func_num_args())
-        return self::$m_current->m_uriResource;
+        return self::$m_current->m_uriComponentsResource;
 
-      return rtrim(self::$m_current->m_uriResource, '/').'/'.ltrim(implode('/', func_get_args()), '/');
+      return rtrim(self::$m_current->m_uriComponentsResource, '/').'/'.ltrim(implode('/', func_get_args()), '/');
+    }
+
+    /**
+     * @return string
+     */
+    public static function uriComponentsResourceLibstd()
+    {
+      return static::uriComponentsResource(\js\libstdJsLocation());
     }
 
     /**
@@ -338,17 +359,21 @@ namespace Components;
     {
       if(is_file($file=(self::$m_current->m_pathConfig."/$file_")))
         @include_once $file;
-
       if(is_file($file=(self::$m_current->m_pathConfig.'/'.self::$m_current->m_name."/$file_")))
         @include_once $file;
     }
 
     /**
-     * @return boolean
+     * @param string $file_
      */
-    public static function isCli()
+    public static function includeComponentConfig($component_, $file_='default.php')
     {
-      return 'cli'===PHP_SAPI;
+      if(is_file($file=self::$m_current->m_pathComponents."/$component_/config/$file_"))
+        @include_once $file;
+      if(is_file($file=self::$m_current->m_pathConfig."/$component_.php"))
+        @include_once $file;
+      if(is_file($file=self::$m_current->m_pathConfig."/".self::$m_current->m_name."/$component_.php"))
+        @include_once $file;
     }
 
     /**
@@ -365,6 +390,24 @@ namespace Components;
         return self::$m_embedded=true;
 
       return self::$m_embedded=false;
+    }
+
+    /**
+     * @param string  $environment_
+     *
+     * @return integer
+     */
+    public static function logLevelDefault($environment_=null)
+    {
+      if(null==$environment_)
+        $environment_=COMPONENTS_ENV;
+
+      $types=array_flip(self::$m_names);
+
+      if(isset($types[$environment_]) && 1<$types[$environment_])
+        return Log::DEBUG;
+
+      return Log::INFO;
     }
     //--------------------------------------------------------------------------
 
@@ -442,6 +485,19 @@ namespace Components;
     public function setPathConfig($path_)
     {
       $this->m_pathConfig=$path_;
+      $this->m_pathConfigLocal=$path_;
+
+      return $this;
+    }
+
+    /**
+     * @param string $path_
+     *
+     * @return \Components\Environment
+     */
+    public function setPathConfigLocal($path_)
+    {
+      $this->m_pathConfigLocal=$path_;
 
       return $this;
     }
@@ -489,6 +545,26 @@ namespace Components;
     /**
      * @return string
      */
+    public function getUriResource()
+    {
+      return $this->m_uriResource;
+    }
+
+    /**
+     * @param string $path_
+     *
+     * @return \Components\Environment
+     */
+    public function setUriResource($uri_)
+    {
+      $this->m_uriResource=$uri_;
+
+      return $this;
+    }
+
+    /**
+     * @return string
+     */
     public function getUriComponents()
     {
       return $this->m_uriComponents;
@@ -529,9 +605,9 @@ namespace Components;
     /**
      * @return string
      */
-    public function getUriResource()
+    public function getUriComponentsResource()
     {
-      return $this->m_uriResource;
+      return $this->m_uriComponentsResource;
     }
 
     /**
@@ -539,9 +615,9 @@ namespace Components;
      *
      * @return \Components\Environment
      */
-    public function setUriResource($uri_)
+    public function setUriComponentsResource($uri_)
     {
-      $this->m_uriResource=$uri_;
+      $this->m_uriComponentsResource=$uri_;
 
       return $this;
     }
@@ -550,7 +626,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * @see \Components\Value_String::value() \Components\Value_String::value()
+     * @see \Components\Value_String::value() value
      */
     public function value()
     {
@@ -558,23 +634,15 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
-     */
-    public function __clone()
-    {
-      return new self($this->m_type);
-    }
-
-    /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
-      return string_hash($this->m_name);
+      return \math\hashs($this->m_name);
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -585,11 +653,19 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
       return $this->m_name;
+    }
+
+    /**
+     * @see \Components\Cloneable::__clone() __clone
+     */
+    public function __clone()
+    {
+      return new self($this->m_type);
     }
     //--------------------------------------------------------------------------
 
@@ -648,6 +724,10 @@ namespace Components;
     /**
      * @var string
      */
+    private $m_uriResource;
+    /**
+     * @var string
+     */
     private $m_uriComponents;
     /**
      * @var string
@@ -656,7 +736,7 @@ namespace Components;
     /**
      * @var string
      */
-    private $m_uriResource;
+    private $m_uriComponentsResource;
     //--------------------------------------------------------------------------
   }
 ?>

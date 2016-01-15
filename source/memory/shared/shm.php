@@ -35,7 +35,7 @@ namespace Components;
     {
       if(false===static::isSupported())
       {
-        throw new Runtime_Exception('memory/shared/shm',
+        throw new Exception_NotSupported('memory/shared/shm',
           'Shared memory with \'shm\' is not supported. Compile PHP with \'--enable-sysvshm\'.'
         );
       }
@@ -100,7 +100,7 @@ namespace Components;
     {
       if(false===shm_put_var($this->m_segment, $key_, $value_))
       {
-        throw new Runtime_Exception('memory/shared/shm', sprintf(
+        throw new Exception_IllegalConfig('memory/shared/shm', sprintf(
           'Unable to store to shared memory segment [%1$s]. '.
           'Try to increase \'sysvshm.init_mem\'.',
             $this->m_segmentId
@@ -139,7 +139,7 @@ namespace Components;
         {
           $this->m_segment=null;
 
-          throw new Runtime_Exception('memory/shared/shm', sprintf(
+          throw new Exception_IllegalState('memory/shared/shm', sprintf(
             'Unable to attach shared memory segment [%1$s].', $this->m_segmentId
           ));
         }
@@ -204,7 +204,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return integer_hash($this->m_segmentId);
+      return \math\hashi($this->m_segmentId);
     }
 
     /**

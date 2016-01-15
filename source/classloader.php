@@ -15,9 +15,6 @@ namespace Components;
    * @package net.evalcode.components.classloader
    *
    * @author evalcode.net
-   *
-   * @see \Components\Classloader_Embedded \Components\Classloader_Embedded
-   * @see \Components\Classloader_Standalone \Components\Classloader_Standalone
    */
   interface Classloader extends Object
   {

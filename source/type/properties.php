@@ -15,20 +15,20 @@ namespace Components;
    * @property mixed *
    * @method Properties *
    */
-  class Properties implements Collection, Cloneable,
-    Serializable_Php, Serializable_Json
+  // TODO Implement \Components\Collection_Mutable.
+  class Properties implements Collection, Cloneable, Serializable_Php, Serializable_Json
   {
     // CONSTRUCTION
-    public function __construct(array $properties_=[])
+    public function __construct(array &$properties_=[])
     {
-      $this->m_properties=$properties_;
+      $this->m_properties=&$properties_;
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
     /**
-     * @see \Components\Collection::arrayValue() \Components\Collection::arrayValue()
+     * @see \Components\Collection::arrayValue() arrayValue
      */
     public function arrayValue()
     {
@@ -36,7 +36,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Collection::isEmpty() \Components\Collection::isEmpty()
+     * @see \Components\Collection::isEmpty() isEmpty
      */
     public function isEmpty()
     {
@@ -44,9 +44,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Collection_Mutable::isEmpty() \Components\Collection_Mutable::isEmpty()
-     *
-     * @todo Add interface \Components\Collection_Mutable.
+     * @see \Components\Collection_Mutable::clear() clear
      */
     public function clear()
     {
@@ -54,7 +52,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Countable::count() \Components\Countable::count()
+     * @see \Components\Countable::count() count
      */
     public function count()
     {
@@ -63,7 +61,7 @@ namespace Components;
 
     public function __get($name_)
     {
-      if(array_key_exists($name_, $this->m_properties))
+      if(isset($this->m_properties[$name_]))
         return $this->m_properties[$name_];
 
       return null;
@@ -114,7 +112,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
+     * @see \Components\Cloneable::__clone() __clone
      */
     public function __clone()
     {
@@ -123,7 +121,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Serializable_Json::serializeJson() \Components\Serializable_Json::serializeJson()
+     * @see \Components\Serializable_Json::serializeJson() serializeJson
      */
     public function serializeJson()
     {
@@ -131,7 +129,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Serializable_Json::unserializeJson() \Components\Serializable_Json::unserializeJson()
+     * @see \Components\Serializable_Json::unserializeJson() unserializeJson
      *
      * @return Compoents\Properties
      */
@@ -143,15 +141,15 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Serializable_Php::__sleep() \Components\Serializable_Php::__sleep()
+     * @see \Components\Serializable_Php::__sleep() __sleep
      */
     public function __sleep()
     {
-      return array('m_properties');
+      return ['m_properties'];
     }
 
     /**
-     * @see \Components\Serializable_Php::__wakeup() \Components\Serializable_Php::__wakeup()
+     * @see \Components\Serializable_Php::__wakeup() __wakeup
      */
     public function __wakeup()
     {
@@ -159,7 +157,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Serializable::serialVersionUid() \Components\Serializable::serialVersionUid()
+     * @see \Components\Serializable::serialVersionUid() serialVersionUid
      */
     public function serialVersionUid()
     {
@@ -167,15 +165,15 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals)
      */
     public function equals($object_)
     {
@@ -186,14 +184,11 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
-      return sprintf('%s@%s{}',
-        __CLASS__,
-        $this->hashCode()
-      );
+      return sprintf('%s@%s{}', __CLASS__, $this->hashCode());
     }
     //--------------------------------------------------------------------------
 

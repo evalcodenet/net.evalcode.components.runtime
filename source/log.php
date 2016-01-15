@@ -25,7 +25,7 @@ namespace Components;
 
     // STATIC ACCESSORS
     /**
-     * Return current instance.
+     * Current log appender.
      *
      * @return \Components\Log_Appender
      */
@@ -35,13 +35,33 @@ namespace Components;
     }
 
     /**
-     * Return named instance.
+     * Current log level.
+     *
+     * @return integer
+     */
+    public static function currentLevel()
+    {
+      return self::$m_currentLevel;
+    }
+
+    /**
+     * @param integer $level_
+     *
+     * @return boolean
+     */
+    public static function isLevelActive($level_)
+    {
+      return $level_<=self::$m_currentLevel;
+    }
+
+    /**
+     * Return named appender.
      *
      * @param string $name_
      *
      * @return \Components\Log_Appender
      *
-     * @throws \Components\Runtime_Exception If no instance found for given name.
+     * @throws \Components\Exception_IllegalArgument If no instance found for given name.
      */
     public static function get($name_)
     {
@@ -51,13 +71,13 @@ namespace Components;
           return $instance;
       }
 
-      throw new Runtime_Exception('components/log', sprintf(
+      throw new Exception_IllegalArgument('components/log', sprintf(
         'No instance found for given name [name: %1$s].', $name_
       ));
     }
 
     /**
-     * Push given instance onto the stack.
+     * Push given appender onto the stack.
      *
      * @param \Components\Log_Appender
      *
@@ -78,7 +98,7 @@ namespace Components;
     }
 
     /**
-     * Pop current instance off the stack.
+     * Pop current appender off the stack.
      *
      * @return \Components\Log_Appender
      */
@@ -136,8 +156,7 @@ namespace Components;
      */
     public static function error($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
-      if(self::ERROR<=self::$m_currentLevel)
-        self::$m_current->append(self::ERROR, func_get_args());
+      self::$m_current->append(self::ERROR, func_get_args());
     }
 
     /**
@@ -147,8 +166,7 @@ namespace Components;
      */
     public static function fatal($namespace_, $message_/*, $arg0_, $arg1_, ..*/)
     {
-      if(self::FATAL<=self::$m_currentLevel)
-        self::$m_current->append(self::FATAL, func_get_args());
+      self::$m_current->append(self::FATAL, func_get_args());
     }
     //--------------------------------------------------------------------------
 

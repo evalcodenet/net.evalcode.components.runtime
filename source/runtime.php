@@ -5,17 +5,8 @@ namespace Components;
 
 
   // INCLUDES
-  include_once __DIR__.'/util.php';
-
   require_once __DIR__.'/type/object.php';
   require_once __DIR__.'/classloader.php';
-
-  require_once __DIR__.'/cache/backend.php';
-  require_once __DIR__.'/cache/backend/apc.php';
-  require_once __DIR__.'/cache/backend/local.php';
-  require_once __DIR__.'/cache/backend/null.php';
-  require_once __DIR__.'/cache/backend/xcache.php';
-  require_once __DIR__.'/cache.php';
 
 
   /**
@@ -42,7 +33,7 @@ namespace Components;
         set_error_handler([self::$m_instance, 'onError'], error_reporting());
         set_exception_handler([self::$m_instance, 'onException']);
 
-        self::$m_cacheFile=sys_get_temp_dir().DIRECTORY_SEPARATOR.COMPONENTS_CACHE_NAMESPACE.'.cache';
+        self::$m_cacheFile=sys_get_temp_dir().DIRECTORY_SEPARATOR.COMPONENTS_INSTANCE_CODE.'.cache';
         register_shutdown_function([self::$m_instance, 'onExit']);
 
         if(self::$m_isCli)
@@ -52,30 +43,12 @@ namespace Components;
         }
 
         self::$m_version=new Version(
-          COMPONENTS_RUNTIME_VERSION_MAJOR, COMPONENTS_RUNTIME_VERSION_MINOR, COMPONENTS_RUNTIME_VERSION_REVISION
+          COMPONENTS_RUNTIME_VERSION_MAJOR,
+          COMPONENTS_RUNTIME_VERSION_MINOR,
+          COMPONENTS_RUNTIME_VERSION_BUILD
         );
 
-        Environment::includeConfig('runtime.php');
-
-        if(self::$m_isCli)
-        {
-          self::$m_isManagementAccess=true;
-        }
-        else
-        {
-          /**
-           * FIXME Remove HTTP_X_VARNISH.
-           *
-           * Integrate explicit vendor-independent header to disable management access.
-           */
-          $remote=null;
-          if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
-            $remote=$_SERVER['HTTP_X_FORWARDED_FOR'];
-          else if(isset($_SERVER['REMOTE_ADDR']) && false===isset($_SERVER['HTTP_X_VARNISH']))
-            $remote=$_SERVER['REMOTE_ADDR'];
-
-          self::$m_isManagementAccess=null!==$remote && in_array($remote, self::$m_managementIps);
-        }
+        Environment::includeComponentConfig('runtime');
       }
 
       return self::$m_instance;
@@ -102,15 +75,15 @@ namespace Components;
      */
     public static function getInstanceNamespace()
     {
-      return COMPONENTS_INSTANCE_NAMESPACE;
+      return COMPONENTS_INSTANCE_CODE;
     }
 
     /**
-     * @return integer
+     * @return boolean
      */
-    public static function getTimestampLastUpdate()
+    public static function isCli()
     {
-      return COMPONENTS_LAST_UPDATE;
+      return self::$m_isCli;
     }
 
     /**
@@ -118,7 +91,18 @@ namespace Components;
      */
     public static function isManagementAccess()
     {
-      return self::$m_isManagementAccess;
+      return in_array(self::getClientAddress(), self::$m_managementIps);
+    }
+
+    /**
+     * @param string $managementIp_
+     */
+    public static function addManagementIp($managementIp_)
+    {
+      if(null===self::$m_managementIps)
+        self::$m_managementIps=[];
+
+      self::$m_managementIps[]=$managementIp_;
     }
 
     /**
@@ -135,6 +119,67 @@ namespace Components;
     public static function setManagementIps(array $managementIps_)
     {
       self::$m_managementIps=$managementIps_;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getHost()
+    {
+      if(null===self::$m_host)
+      {
+        if(isset($_SERVER['HTTP_HOST']))
+        {
+          self::$m_host=strtolower($_SERVER['HTTP_HOST']);
+
+          if(false!==($pos=strpos(self::$m_host, ':')))
+            self::$m_host=substr(self::$m_host, $pos);
+        }
+        else
+        {
+          self::$m_host='localhost';
+        }
+      }
+
+      return self::$m_host;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getHostAddress()
+    {
+      if(null===self::$m_hostAddress)
+      {
+        if(isset($_SERVER['SERVER_ADDR']))
+          self::$m_hostAddress=$_SERVER['SERVER_ADDR'];
+        else
+          self::$m_hostAddress='127.0.0.1';
+      }
+
+      return self::$m_hostAddress;
+    }
+
+    /**
+     * @return string
+     */
+    public static function getClientAddress()
+    {
+      if(null===self::$m_clientAddress)
+      {
+        self::$m_clientAddress='0.0.0.0';
+
+        // FIXME Support IPv6.
+        if(self::isCli())
+          self::$m_clientAddress='127.0.0.1';
+        // FIXME Set REMOTE_ADDR via nginx/fastcgi_params if request comes from varnish.
+        else if(isset($_SERVER['REMOTE_ADDR']) && false===isset($_SERVER['HTTP_X_VARNISH']))
+          self::$m_clientAddress=$_SERVER['REMOTE_ADDR'];
+        else if(isset($_SERVER['HTTP_X_FORWARDED_FOR']))
+          self::$m_clientAddress=$_SERVER['HTTP_X_FORWARDED_FOR'];
+      }
+
+      return self::$m_clientAddress;
     }
 
     /**
@@ -219,8 +264,8 @@ namespace Components;
      */
     public static function addException(\Exception $e_)
     {
+      exception_header($e_);
       exception_log($e_);
-      exception_header($e_, true, false);
 
       array_push(self::$m_exceptions, $e_);
     }
@@ -230,12 +275,12 @@ namespace Components;
      */
     public static function removeException(\Exception $e_)
     {
-      $hash=object_hash_md5($e_);
+      $hash=\math\hasho_md5($e_);
 
       $exceptions=[];
       foreach(self::$m_exceptions as $exception)
       {
-        if($hash!==object_hash_md5($exception))
+        if($hash!==\math\hasho_md5($exception))
           $exceptions[]=$exception;
       }
 
@@ -279,7 +324,7 @@ namespace Components;
           Log::error('components/runtime', 'Out of memory.');
 
           @header('HTTP/1.1 500 Internal Server Error', true, 500);
-          if(self::$m_isManagementAccess)
+          if(self::isManagementAccess())
             @header('Components-Exception-0: Out of memory.');
         }
 
@@ -331,7 +376,7 @@ namespace Components;
         exit(false===$hasErrors?0:-1);
       }
 
-      if(Debug::active() && (self::$m_isManagementAccess || Environment::isDev()))
+      if(Debug::active() && (self::isManagementAccess() || Environment::isDev()))
       {
         if(0<count(self::$m_exceptions))
           Debug::verror(self::$m_exceptions);
@@ -356,7 +401,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**
@@ -375,11 +420,10 @@ namespace Components;
      */
     public function __toString()
     {
-      return sprintf('%s@%s{version: %s, lastUpdate: %s}',
+      return sprintf('%s@%s{version: %s}',
         __CLASS__,
         $this->hashCode(),
-        self::$m_version,
-        COMPONENTS_LAST_UPDATE
+        self::$m_version
       );
     }
     //--------------------------------------------------------------------------
@@ -391,13 +435,25 @@ namespace Components;
      */
     private static $m_isCli=false;
     /**
+     * @var string
+     */
+    private static $m_clientAddress;
+    /**
+     * @var string
+     */
+    private static $m_host;
+    /**
+     * @var string
+     */
+    private static $m_hostAddress;
+    /**
      * @var boolean
      */
-    private static $m_isManagementAccess=false;
+    private static $m_isManagementAccess;
     /**
      * @var string[]
      */
-    private static $m_managementIps=['127.0.0.1', '::1'];
+    private static $m_managementIps=[];
     /**
      * @var \Components\Runtime_Error_Handler[]
      */
@@ -654,7 +710,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**
@@ -790,8 +846,9 @@ namespace Components;
     public function toArray($includeStackTrace_=false, $stackTraceAsArray_=false)
     {
       $asArray=[
+        'id'=>\math\hasho_md5($this),
         'type'=>get_class($this),
-        'code'=>$this->code,
+        'code'=>$this->getCode(),
         'namespace'=>$this->getNamespace(),
         'message'=>$this->getMessage(),
         'file'=>$this->getFile(),
@@ -889,7 +946,7 @@ namespace Components;
       if($this->m_logEnabled)
       {
         Log::error($this->m_namespace, '[%s] %s%s',
-          object_hash_md5($this),
+         \math\hasho_md5($this),
           get_class($this),
           $this
         );
@@ -901,7 +958,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**
@@ -1021,7 +1078,7 @@ namespace Components;
       if($this->m_logEnabled)
       {
         Log::error($this->m_namespace, '[%s] %s%s',
-          object_hash_md5($this),
+         \math\hasho_md5($this),
           get_class($this),
           $this
         );
@@ -1033,7 +1090,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return object_hash($this);
+      return \math\hasho($this);
     }
 
     /**
@@ -1136,7 +1193,19 @@ namespace Components;
   }
 
 
-  Cache::create();
-  spl_autoload_register([new Runtime_Classloader(), 'loadClass']);
-  Log::push(new Log_Appender_Null('null', Log::FATAL));
+    // SETUP
+    include_once __DIR__.'/util.php';
+    include_once __DIR__.'/lib/std.php';
+
+    require_once __DIR__.'/cache/backend.php';
+    require_once __DIR__.'/cache/backend/apc.php';
+    require_once __DIR__.'/cache/backend/local.php';
+    require_once __DIR__.'/cache/backend/null.php';
+    require_once __DIR__.'/cache/backend/xcache.php';
+    require_once __DIR__.'/cache.php';
+
+    Cache::create();
+    spl_autoload_register([new Runtime_Classloader(), 'loadClass']);
+    Log::push(new Log_Appender_Null('null', Log::FATAL));
+    //--------------------------------------------------------------------------
 ?>

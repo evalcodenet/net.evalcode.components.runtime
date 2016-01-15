@@ -39,7 +39,7 @@ namespace Components;
 
       if(__CLASS__===$type)
       {
-        throw new Runtime_Exception('runtime/type/enumeration',
+        throw new Exception_Abstract_Type('components/enumeration',
           'Enumeration can not be invoked directly.'
         );
       }
@@ -55,7 +55,7 @@ namespace Components;
         $trace=debug_backtrace(false);
         $caller=$trace[1];
 
-        throw new Runtime_Exception('components/type/enumeration', sprintf(
+        throw new Exception_NotImplemented('components/enumeration', sprintf(
           'Call to undefined method %1$s::%2$s() in %3$s on line %4$d.',
             $type,
             $name_,
@@ -80,8 +80,7 @@ namespace Components;
       // Cache simple enum instances.
       // XXX Instances MUST be state-less.
       return self::$m_enumInstances[$type][$name_]=new $concrete(
-        self::$m_enums[$type][$name_],
-        constant("$type::$name_")
+        self::$m_enums[$type][$name_], constant("$type::$name_")
       );
     }
 
@@ -100,7 +99,7 @@ namespace Components;
      */
     public static function values()
     {
-      throw new Exception_Abstract_Method('components/type/enumeration', 'Abstract method.');
+      throw new Exception_Abstract_Method('components/enumeration', 'Abstract method.');
     }
 
     /**
@@ -114,7 +113,7 @@ namespace Components;
 
       if(__CLASS__===$type)
       {
-        throw new Runtime_Exception('components/type/enumeration',
+        throw new Exception_Abstract_Type('components/enumeration',
           'Enumeration can not be invoked directly.'
         );
       }
@@ -142,7 +141,7 @@ namespace Components;
 
       if(__CLASS__===$type)
       {
-        throw new Runtime_Exception('components/type/enumeration',
+        throw new Exception_Abstract_Type('components/enumeration',
           'Enumeration can not be invoked directly.'
         );
       }
@@ -169,7 +168,7 @@ namespace Components;
 
       if(__CLASS__===$type)
       {
-        throw new Runtime_Exception('components/type/enumeration',
+        throw new Exception_Abstract_Type('components/enumeration',
           'Enumeration can not be invoked directly.'
         );
       }
@@ -196,7 +195,7 @@ namespace Components;
 
       if(__CLASS__===$type)
       {
-        throw new Runtime_Exception('components/type/enumeration',
+        throw new Exception_Abstract_Type('components/enumeration',
           'Enumeration can not be invoked directly.'
         );
       }
@@ -218,7 +217,7 @@ namespace Components;
 
       if(__CLASS__===$type)
       {
-        throw new Runtime_Exception('components/type/enumeration',
+        throw new Exception_Abstract_Type('components/enumeration',
           'Enumeration can not be invoked directly.'
         );
       }
@@ -252,7 +251,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * @see \Components\Comparable::compareTo() \Components\Comparable::compareTo()
+     * @see \Components\Comparable::compareTo() compareTo
      */
     public function compareTo($object_)
     {
@@ -268,15 +267,15 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
-      return string_hash($this->m_name);
+      return \math\hashs($this->m_name);
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -287,7 +286,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
@@ -295,7 +294,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Serializable_Php::__sleep() \Components\Serializable_Php::__sleep()
+     * @see \Components\Serializable_Php::__sleep() __sleep
      */
     public function __sleep()
     {
@@ -303,7 +302,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Serializable_Php::__wakeup() \Components\Serializable_Php::__wakeup()
+     * @see \Components\Serializable_Php::__wakeup() __wakeup
      */
     public function __wakeup()
     {
@@ -311,8 +310,7 @@ namespace Components;
     }
 
     /**
-     * (non-PHPdoc)
-     * @see \Components\Serializable::serialVersionUid() \Components\Serializable::serialVersionUid()
+     * @see \Components\Serializable::serialVersionUid() serialVersionUid
      */
     public function serialVersionUid()
     {
@@ -320,7 +318,7 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Value_String::value() \Components\Value_String::value()
+     * @see \Components\Value_String::value() value
      */
     public function value()
     {
@@ -331,11 +329,11 @@ namespace Components;
 
     // IMPLEMENTATION
     /**
-     * @var boolean
+     * @var bool
      */
     private static $m_initialized=false;
     /**
-     * @var array
+     * @var scalar[]
      */
     private static $m_enums=[];
     /**
@@ -353,7 +351,7 @@ namespace Components;
     {
       if(false===self::$m_initialized)
       {
-        if(false===(self::$m_enums=Cache::get('components/type/enumeration')))
+        if(false===(self::$m_enums=Cache::get('components/enumeration')))
           self::$m_enums=[];
 
         self::$m_initialized=true;
@@ -363,7 +361,7 @@ namespace Components;
       {
         self::$m_enums[$type_]=array_flip(static::values());
 
-        Cache::set('components/type/enumeration', self::$m_enums);
+        Cache::set('components/enumeration', self::$m_enums);
       }
     }
     //--------------------------------------------------------------------------

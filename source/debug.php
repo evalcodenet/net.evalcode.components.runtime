@@ -21,6 +21,9 @@ namespace Components;
     const WARN=2;
     const INFO=4;
 
+    const STYLE_PLAIN=0;
+    const STYLE_QUERY=1;
+
     const MARKUP='MARKUP';
     //--------------------------------------------------------------------------
 
@@ -41,6 +44,8 @@ namespace Components;
      */
     public static function activate()
     {
+      \env\debug(true);
+
       self::$m_active=true;
 
       self::notifyListeners();
@@ -51,6 +56,8 @@ namespace Components;
      */
     public static function deactivate()
     {
+      \env\debug(false);
+
       self::$m_active=false;
 
       self::notifyListeners();
@@ -110,7 +117,11 @@ namespace Components;
     public static function appender($verbosity_=self::INFO, Debug_Appender $appender_=null)
     {
       if(null!==$appender_)
+      {
         self::$m_appender[$verbosity_]=$appender_;
+
+        return $appender_;
+      }
 
       if(self::$m_active && self::$m_verbosity>=$verbosity_ && Runtime::isManagementAccess())
       {
@@ -231,7 +242,7 @@ namespace Components;
     /**
      * @var integer
      */
-    private static $m_verbosity=self::INFO;
+    private static $m_verbosity=self::ERROR;
     /**
      * @var string[]
      */

@@ -23,7 +23,7 @@ namespace Components;
      *
      * @return \Components\Log_Appender_Chain
      */
-    public static function of($name_, $level_=Log::INFO, Log_Appender $appender0_/*, Log_Appender $appender1_.. */)
+    public static function of($name_, $level_, Log_Appender $appender0_/*, Log_Appender $appender1_.. */)
     {
       $args=func_get_args();
 
@@ -35,19 +35,46 @@ namespace Components;
     //--------------------------------------------------------------------------
 
 
-    // OVERRIDES
+    // ACCESSORS/MUTATORS
     /**
-     * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
+     * @param Log_Appender $appender_
+     *
+     * @return \Components\Log_Appender_Chain
+     */
+    public function add(Log_Appender $appender_)
+    {
+      $this->m_appenders[]=$appender_;
+
+      return $this;
+    }
+    //--------------------------------------------------------------------------
+
+
+    // OVERRIDES/IMPLEMENTS
+    /**
+     * @see \Components\Log_Appender::append() append
      */
     public function append($level_, array $args_=[])
     {
       foreach($this->m_appenders as $appender)
         $appender->append($level_, $args_);
     }
+
+    /**
+     * @see \Components\Log_Appender_Abstract::initialize() initialize
+     */
+    public function initialize()
+    {
+      foreach($this->m_appenders as $appender)
+        $appender->initialize();
+    }
     //--------------------------------------------------------------------------
 
 
     // IMPLEMENTATION
+    /**
+     * @var \Components\Log_Appender[]
+     */
     private $m_appenders=[];
     //--------------------------------------------------------------------------
   }

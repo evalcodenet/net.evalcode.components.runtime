@@ -34,7 +34,7 @@ namespace Components;
     {
       if(false===static::isSupported())
       {
-        throw new Runtime_Exception('memory/shared/shm',
+        throw new Exception_NotSupported('memory/shared/shm',
           'Shared memory with \'shm\' is not supported. Compile PHP with \'--enable-sysvshm\'.'
         );
       }
@@ -65,7 +65,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return string_hash($this->m_file);
+      return \math\hashs($this->m_file);
     }
 
     /**
@@ -88,7 +88,7 @@ namespace Components;
      */
     public function __clone()
     {
-      throw new Runtime_Exception('memory/shared/shm',
+      throw new Exception_NotSupported('memory/shared/shm',
         'Cloning a temporary shared memory segments is not supported.'
       );
     }
@@ -98,7 +98,7 @@ namespace Components;
      */
     public function serialize()
     {
-      throw new Runtime_Exception('memory/shared/shm',
+      throw new Exception_NotSupported('memory/shared/shm',
         'Serializing a temporary shared memory segment is not supported.'
       );
     }
@@ -108,7 +108,7 @@ namespace Components;
      */
     public function unserialize($segmentId_)
     {
-      throw new Runtime_Exception('memory/shared/shm',
+      throw new Exception_NotSupported('memory/shared/shm',
         'Serializing a temporary shared memory segment is not supported.'
       );
     }
@@ -123,14 +123,14 @@ namespace Components;
 
     public function __sleep()
     {
-      throw new Runtime_Exception('memory/shared/shm',
+      throw new Exception_NotSupported('memory/shared/shm',
         'Serializing a temporary shared memory segment is not supported.'
       );
     }
 
     public function __wakeup()
     {
-      throw new Runtime_Exception('memory/shared/shm',
+      throw new Exception_NotSupported('memory/shared/shm',
         'Serializing a temporary shared memory segment is not supported.'
       );
     }

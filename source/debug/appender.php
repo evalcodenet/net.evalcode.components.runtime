@@ -18,17 +18,31 @@ namespace Components;
     /**
      * @param integer $severity_
      * @param mixed[] $args_
+     * @param string $sourceFile_
+     * @param integer $sourceLine_
+     * @param integer $style_
+     *
+     * @return void
      */
-    function append($severity_, array $args_);
+    function append($severity_, array $args_,
+      $sourceFile_=null, $sourceLine_=null, $style_=Debug::STYLE_PLAIN);
 
     /**
-     * TODO [CSH] Refactor to a single & useful append method.
-     *
      * @param integer $severity_
      * @param string $message_
-     * @param string[] $lines_
+     * @param string $sourceFile_
+     * @param integer $sourceLine_
+     * @param integer $style_
+     *
+     * @return void
      */
-    function appendGroup($severity_, $message_, array $lines_);
+    function groupBegin($severity_, $message_,
+      $sourceFile_=null, $sourceLine_=null, $style_=Debug::STYLE_PLAIN);
+
+    /**
+     * @return void
+     */
+    function groupEnd();
 
     function clear();
     function flush();

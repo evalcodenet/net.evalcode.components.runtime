@@ -166,7 +166,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return string_hash($this->m_component);
+      return \math\hashs($this->m_component);
     }
 
     /**
@@ -234,7 +234,7 @@ namespace Components;
 
           if(false===is_file($file))
           {
-            throw new Runtime_Exception('manifest', sprintf(
+            throw new Exception_IllegalConfig('manifest', sprintf(
               'Unable to resolve component manifest [path: %s].', $file
             ));
           }

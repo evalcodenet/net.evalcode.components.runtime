@@ -35,7 +35,7 @@ namespace Components;
     {
       if(false===static::isSupported())
       {
-        throw new Runtime_Exception('memory/shared/shmop',
+        throw new Exception_NotSupported('memory/shared/shmop',
           'Shared memory with \'shmop\' is not supported. Compile PHP with \'--enable-shmop\'.'
         );
       }
@@ -102,7 +102,7 @@ namespace Components;
     {
       if(false===$this->m_segmentId)
       {
-        throw new Runtime_Exception('memory/shared/shmop',
+        throw new Exception_IllegalState('memory/shared/shmop',
           'Can not clear a closed shared memory segment.'
         );
       }
@@ -117,7 +117,7 @@ namespace Components;
     {
       if(false===$this->m_segmentId)
       {
-        throw new Runtime_Exception('memory/shared/shmop',
+        throw new Exception_IllegalState('memory/shared/shmop',
           'Can not read from a closed shared memory segment.'
         );
       }
@@ -134,7 +134,7 @@ namespace Components;
 
       if($this->getCapacity()<($start_+$count_))
       {
-        throw new Runtime_Exception('memory/shared/shmop', sprintf(
+        throw new Exception_IllegalArgument('memory/shared/shmop', sprintf(
           'Requested range of bytes exceeds current size of shared memory segment '.
           '[size: %1$d, requested-bytes: %2$d-%3$d].',
             $this->getCapacity(), $start_, $count_
@@ -148,7 +148,7 @@ namespace Components;
     {
       if(false===$this->m_segmentId)
       {
-        throw new Runtime_Exception('memory/shared/shmop',
+        throw new Exception_IllegalState('memory/shared/shmop',
           'Can not write to a closed shared memory segment.'
         );
       }
@@ -173,7 +173,7 @@ namespace Components;
       {
         if(false===$this->m_segmentId)
         {
-          throw new Runtime_Exception('memory/shared/shmop',
+          throw new Exception_IllegalState('memory/shared/shmop',
             'Can not get size of a closed shared memory segment.'
           );
         }
@@ -228,7 +228,7 @@ namespace Components;
      */
     public function hashCode()
     {
-      return integer_hash($this->m_id);
+      return \math\hashi($this->m_id);
     }
 
     /**

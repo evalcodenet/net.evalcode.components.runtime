@@ -130,10 +130,14 @@ namespace Components;
       // FIXME Implement cache/backend/opcache or separate into opcache/zend & opcache/apc in independent of cache/backend/* userland caches.
       if(function_exists('opcache_invalidate'))
       {
-        Io::pathApplyRecursive(Environment::pathApplication(), function(Io_Path $path_) {
-          if($path_->hasFileExtension(Io_Mimetype::EXTENSION_PHP))
-            opcache_invalidate($path_, true);
-        });
+        $invalidate=function($path_) {
+          opcache_invalidate($path_, true);
+        };
+
+        // FIXME Only if containerized.
+        \io\pathApplyFiltered('/', '/\.php$/', $invalidate);
+        // \io\pathApplyFiltered(\Components\Environment::pathApplication(), '/\.php$/', $invalidate);
+        // \io\pathApplyFiltered(\Components\Environment::pathComponents(), '/\.php$/', $invalidate);
       }
       else if(function_exists('opcache_reset'))
       {
@@ -150,15 +154,4 @@ namespace Components;
     private static $m_isSupported;
     //--------------------------------------------------------------------------
   }
-
-
-    // COMPATIBILITY HELPERS
-    if(false===function_exists('apc_exists'))
-    {
-      function apc_exists($key_)
-      {
-        return false!==apc_fetch($key_);
-      }
-    }
-    //--------------------------------------------------------------------------
 ?>

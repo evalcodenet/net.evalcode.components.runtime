@@ -30,7 +30,7 @@ namespace Components;
 
     // OVERRIDES
     /**
-     * @see \Components\Log_Appender::append() \Components\Log_Appender::append()
+     * @see \Components\Log_Appender::append() append
      */
     public function append($level_, array $args_=[])
     {
@@ -40,31 +40,26 @@ namespace Components;
     }
 
     /**
-     * @see \Components\Log_Appender::initialize() \Components\Log_Appender::initialize()
+     * @see \Components\Log_Appender::initialize() initialize
      */
     public function initialize()
     {
-      if($this->m_initialized)
-        return;
+      if(false===$this->m_initialized)
+      {
+        parent::initialize();
 
-      \LoggerPropertyConfigurator::configure($this->getConfigurationFile());
+        \LoggerPropertyConfigurator::configure($this->getConfigurationFile());
 
-      $this->m_logger=$this->getLoggerImpl(
-        str_replace(' ', '', lcfirst(ucwords(strtr(trim(get_class($this)), '_', ' '))))
-      );
+        $this->m_logger=$this->getLoggerImpl(\str\underscoreToCamelCase(__CLASS__));
+        $this->level=self::$m_mapNameToLevel[strtolower($this->m_logger->getEffectiveLevel())];
 
-      $this->level=self::$m_mapNameToLevel[strtolower($this->m_logger->getEffectiveLevel())];
-
-      $this->m_initialized=true;
+        $this->m_initialized=true;
+      }
     }
     //--------------------------------------------------------------------------
 
 
     // IMPLEMENTATION
-    /**
-     * @var boolean
-     */
-    protected $m_initialized=false;
     /**
      * @var \Logger $logger
      */

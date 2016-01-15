@@ -12,14 +12,15 @@ namespace Components;
    *
    * @author evalcode.net
    */
+  // FIXME Implement according to net.evalcode.util.ant.task.version.
   class Version implements Object, Comparable, Cloneable
   {
     // CONSTRUCTION
-    public function __construct($major_, $minor_, $revision_)
+    public function __construct($major_, $minor_, $build_)
     {
       $this->m_major=$major_;
       $this->m_minor=$minor_;
-      $this->m_revision=$revision_;
+      $this->m_build=$build_;
     }
     //--------------------------------------------------------------------------
 
@@ -48,9 +49,9 @@ namespace Components;
 
       $major=isset($chunks[0])?(int)$chunks[0]:0;
       $minor=isset($chunks[1])?(int)$chunks[1]:0;
-      $revision=isset($chunks[2])?(int)$chunks[2]:0;
+      $build=isset($chunks[2])?(int)$chunks[2]:0;
 
-      return new static($major, $minor, $revision);
+      return new static($major, $minor, $build);
     }
     //--------------------------------------------------------------------------
 
@@ -66,16 +67,16 @@ namespace Components;
       return $this->m_minor;
     }
 
-    public function getRevision()
+    public function getBuild()
     {
-      return $this->m_revision;
+      return $this->m_build;
     }
     //--------------------------------------------------------------------------
 
 
     // OVERRIDES
     /**
-     * @see \Components\Comparable::compareTo() \Components\Comparable::compareTo()
+     * @see \Components\Comparable::compareTo() compareTo
      */
     public function compareTo($object_)
     {
@@ -85,10 +86,10 @@ namespace Components;
         {
           if($this->m_minor===$object_->m_minor)
           {
-            if($this->m_revision===$object_->m_revision)
+            if($this->m_build===$object_->m_build)
               return 0;
 
-            if($this->m_revision<$object_->m_revision)
+            if($this->m_build<$object_->m_build)
               return -1;
 
             return 1;
@@ -106,27 +107,27 @@ namespace Components;
         return 1;
       }
 
-      throw new Runtime_Exception('runtime/version', 'Can not compare to instance of unknown type.');
+      throw new Exception_IllegalArgument('runtime/version', 'Can not compare to instance of unknown type.');
     }
 
     /**
-     * @see \Components\Cloneable::__clone() \Components\Cloneable::__clone()
+     * @see \Components\Cloneable::__clone() __clone
      */
     public function __clone()
     {
-      return new static($this->m_major, $this->m_minor, $this->m_revision);
+      return new static($this->m_major, $this->m_minor, $this->m_build);
     }
 
     /**
-     * @see \Components\Object::hashCode() \Components\Object::hashCode()
+     * @see \Components\Object::hashCode() hashCode
      */
     public function hashCode()
     {
-      return integer_hash_m($this->m_major, $this->m_minor, $this->m_revision);
+      return \math\hashiv($this->m_major, $this->m_minor, $this->m_build);
     }
 
     /**
-     * @see \Components\Object::equals() \Components\Object::equals()
+     * @see \Components\Object::equals() equals
      */
     public function equals($object_)
     {
@@ -134,21 +135,21 @@ namespace Components;
       {
         return $this->m_major===$object_->m_major
           && $this->m_minor===$object_->m_minor
-          && $this->m_revision===$object_->m_revision;
+          && $this->m_build===$object_->m_build;
       }
 
       return false;
     }
 
     /**
-     * @see \Components\Object::__toString() \Components\Object::__toString()
+     * @see \Components\Object::__toString() __toString
      */
     public function __toString()
     {
       return sprintf('%1$d.%2$d.%3$d',
         $this->getMajor(),
         $this->getMinor(),
-        $this->getRevision()
+        $this->getBuild()
       );
     }
     //--------------------------------------------------------------------------
@@ -157,7 +158,7 @@ namespace Components;
     // IMPLEMENTATION
     private $m_major;
     private $m_minor;
-    private $m_revision;
+    private $m_build;
     //--------------------------------------------------------------------------
   }
 ?>
